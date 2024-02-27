@@ -7,16 +7,24 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "axios": "^1.6.7",
+    "linkedin-auth": "^0.0.4",
     "register-service-worker": "^1.7.2",
     "vue": "^3.2.13",
+    "vue-google-oauth2": "^1.5.10",
     "vue-router": "^4.0.3",
+    "vue3-google-login": "^2.0.25",
+    "vue3-linkedin-login": "^0.1.8",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
-    "@vue/cli-service": "~5.0.0"
+    "@vue/cli-service": "~5.0.0",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1"
   },
   "browserslist": [
     "> 1%",

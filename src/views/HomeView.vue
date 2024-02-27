@@ -1,18 +1,35 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <h1>Bright Next Academy</h1>
+    <RouterLink to="/login">
+      <button class="border p-4">
+        login
+      </button>
+    </RouterLink>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import { googleSdkLoaded } from "vue3-google-login";
+import axios from "axios";
 
 export default {
-  name: 'HomeView',
-  components: {
-    HelloWorld
+  name: "YourComponent",
+  data(){
+    return{
+      userProfile: '',
+    }
+  },
+  methods:{
+    async googleSignIn(){
+      try{
+        const profile = googleUser.getBasicProfile();
+        this.userProfile = profile
+      }
+      catch(error){
+        console.error(error)
+      }
+    }
   }
-}
+};
 </script>

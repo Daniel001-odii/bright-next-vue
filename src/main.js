@@ -4,4 +4,17 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 
-createApp(App).use(store).use(router).mount('#app')
+import vue3GoogleLogin from 'vue3-google-login'
+const CLIENT_ID = "702280900258-fonncafu867lccckk6ppm6a2eg2e597j.apps.googleusercontent.com"
+
+import '../src/assets/css/main.css'
+
+
+const app = createApp(App);
+
+app.config.globalProperties.api_url = 'http://localhost:8000/api';
+app.config.globalProperties.token = window.localStorage.getItem('life-gaurd'); 
+
+app.use(vue3GoogleLogin, {clientId:CLIENT_ID}).use(store).use(router)
+
+app.mount('#app')
