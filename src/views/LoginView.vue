@@ -13,20 +13,26 @@
                         <h1 class="text-green text-3xl text-left py-6">Log in</h1>
                         <div class="flex flex-col gap-4 text-left">
                             <p clas="p-0 m-0">Enter your credentials to log in to our platform.</p>
-                            <input class="form_input" v-model="form_data.email" type="email" placeholder="johndoe@gmail.com" required>
-                            <input class="form_input" v-model="form_data.password" type="password" placeholder="password" required>
+                            <input class="form_input" v-model="login_form_data.usernameOrEmail" type="email" placeholder="johndoe@gmail.com" required>
+                            <input class="form_input" v-model="login_form_data.password" type="password" placeholder="password" required>
                             <button type="submit" class="bg-green w-full py-3 text-white rounded-3xl">Continue</button>
                         </div>
                     </form>
+
                     <div class="mt-5">
-                        <GoogleLogin :callback="callback" auto-login/>
-                            <!-- <GoogleAuthButton @click="googleLogin()"/> -->
+                        <GoogleLogin class="!w-full" :callback="callback" auto-login prompt/>
+                            <!-- <GoogleAuthButton/>
+                        </GoogleLogin> -->
                     </div>
+
                     <div class="mt-5">
-                        <LinkedInSignin
-                            :client-id="linkediInClientId"
-                            css="flex justify-center py-3 px-2 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"
-                        />
+                        <LinkedInSignin :client-id="linkediInClientId" css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"/>
+                    </div>
+
+                    <div class="mt-5">
+                        <VFacebookLogin app-id="903137658112158" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
+                            login with facebook
+                        </VFacebookLogin>
                     </div>
                 </div>
                 <div v-if="currentTab == 'register'">
@@ -34,15 +40,28 @@
                         <h1 class="text-green text-3xl text-left py-6">Create your account</h1>
                         <div class="flex flex-col gap-4 text-left">
                             <p clas="p-0 m-0">Create a free account to continue on our platform</p>
-                            <input class="form_input" v-model="form_data.username" type="text" placeholder="Full Name" required>
-                            <input class="form_input" v-model="form_data.email" type="email" placeholder="johndoe@gmail.com" required>
-                            <input class="form_input" v-model="form_data.password" type="password" placeholder="password" required>
+                            <input class="form_input" v-model="regsiter_form_data.username" type="text" placeholder="Full Name" required>
+                            <input class="form_input" v-model="regsiter_form_data.email" type="email" placeholder="johndoe@gmail.com" required>
+                            <input class="form_input" v-model="regsiter_form_data.password" type="password" placeholder="password" required>
                             <button type="submit" class="bg-green w-full py-3 text-white rounded-3xl">Continue</button>
                         </div>
                     </form>
                     <div class="mt-5">
-                            <GoogleAuthButton/>                       
+                        <GoogleLogin class="!w-full" :callback="callback" auto-login/>
+                            <!-- <GoogleAuthButton/> -->
+                        <!-- </GoogleLogin> -->
                     </div>
+
+                    <div class="mt-5">
+                        <LinkedInSignin :client-id="linkediInClientId" css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"/>
+                    </div>
+
+                    <div class="mt-5">
+                        <VFacebookLogin app-id="903137658112158" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
+                            login with facebook
+                        </VFacebookLogin>
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -59,21 +78,64 @@ import axios from 'axios'
 import { LinkedInSignin } from "linkedin-auth";
 // const linkediInClientId = "86zgoouj5v6t14";
 
+import VFacebookLogin from 'vue-facebook-login-component-next'
 
 export default {
     name: "LoginView",
-    components: {GoogleAuthButton, LinkedInSignin},
+    components: {GoogleAuthButton, LinkedInSignin, VFacebookLogin},
     data(){
         return{
             linkediInClientId: '86zgoouj5v6t14',
             currentTab: 'login',
-            form_data: {
+            login_form_data: {
+                usernameOrEmail: '',
+                password: ''
+            },
+            regsiter_form_data: {
                 username: '',
                 email: '',
                 password: ''
             },
             error: '',
-            callback: async (response) => {
+            callback:this.googleAuth,
+        }
+    },
+    methods: {
+        async login(){
+            try{
+                const response = await axios.post('http://localhost:8000/api/login', this.login_form_data);
+                console.log(response);
+            }
+            catch(error){
+                console.error(error);
+                this.error = error.response.data.message;
+            }
+        },
+
+        async register(){
+            try{
+                const response = await axios.post('http://localhost:8000/api/register', this.regsiter_form_data);
+                console.log(response);
+                alert(response.data.message)
+            }
+            catch(error){
+                console.error(error)
+                this.error = error.response.data.message;
+            }
+        },
+
+        async googleLogin() {
+        try {
+            const response = await googleAuthCodeLogin();
+            console.log("Handle the response", response);
+            console.log("decode credential: ", decodeCredential(response.credential))
+        } catch (error) {
+            console.error("Error during Google login:", error);
+          
+        }
+        },
+
+        async googleAuth(response) {
                 // console.log(response)
                 console.log("decode credential: ", decodeCredential(response.credential));
                 const decoded_user_data = decodeCredential(response.credential);
@@ -100,41 +162,6 @@ export default {
                 }catch(error){
                     console.log(error)
                 }
-            }
-        }
-    },
-    methods: {
-        async login(){
-            try{
-                const response = await axios.post('http://localhost:8000/api/login', this.form_data);
-                console.log(response);
-            }
-            catch(error){
-                console.error(error);
-                this.error = error.response.data.message;
-            }
-        },
-
-        async register(){
-            try{
-                const response = await axios.post('http://localhost:8000/api/register', this.form_data);
-                console.log(response);
-            }
-            catch(error){
-                console.error(error)
-                this.error = error.response.data.message;
-            }
-        },
-
-        async googleLogin() {
-        try {
-            const response = await googleAuthCodeLogin();
-            console.log("Handle the response", response);
-            console.log("decode credential: ", decodeCredential(response.credential))
-        } catch (error) {
-            console.error("Error during Google login:", error);
-          
-        }
         },
 
 
