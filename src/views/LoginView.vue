@@ -20,9 +20,9 @@
                     </form>
 
                     <div class="mt-5">
-                        <GoogleLogin class="!w-full" :callback="callback" auto-login prompt/>
-                            <!-- <GoogleAuthButton/>
-                        </GoogleLogin> -->
+                        <!-- <GoogleLogin class="!w-full" :callback="callback" auto-login prompt> -->
+                            <GoogleAuthButton @click="googleLogin"/>
+                        <!-- </GoogleLogin> -->
                     </div>
 
                     <div class="mt-5">
@@ -33,6 +33,10 @@
                         <VFacebookLogin app-id="903137658112158" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
                             login with facebook
                         </VFacebookLogin>
+                    </div>
+
+                    <div class="mt-5">
+                        <button class="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-slate-500 hover:!bg-slate-50 cursor-pointer w-full">Continue with microsoft</button>
                     </div>
                 </div>
                 <div v-if="currentTab == 'register'">
@@ -47,9 +51,10 @@
                         </div>
                     </form>
                     <div class="mt-5">
-                        <GoogleLogin class="!w-full" :callback="callback" auto-login/>
+                        <!-- <GoogleLogin class="!w-full" :callback="callback" auto-login/> -->
                             <!-- <GoogleAuthButton/> -->
                         <!-- </GoogleLogin> -->
+                        <GoogleAuthButton @click="googleLogin"/>
                     </div>
 
                     <div class="mt-5">
@@ -72,7 +77,7 @@
 <script>
 import GoogleAuthButton from '@/components/GoogleAuthButton.vue';
 import { googleAuthCodeLogin } from 'vue3-google-login';
-import { decodeCredential } from 'vue3-google-login';
+// import { decodeCredential } from 'vue3-google-login';
 import axios from 'axios'
 
 import { LinkedInSignin } from "linkedin-auth";
@@ -97,14 +102,16 @@ export default {
                 password: ''
             },
             error: '',
-            callback:this.googleAuth,
+            callback: this.googleAuth,
         }
     },
     methods: {
         async login(){
             try{
-                const response = await axios.post('http://localhost:8000/api/login', this.login_form_data);
+                const response = await axios.post(`${this.api_url}/login`, this.login_form_data);
                 console.log(response);
+                const auth_code = { code: response.code }
+                const res = await axios.post(`${this.api_url}/google-auth`, auth_code );
             }
             catch(error){
                 console.error(error);
@@ -114,7 +121,7 @@ export default {
 
         async register(){
             try{
-                const response = await axios.post('http://localhost:8000/api/register', this.regsiter_form_data);
+                const response = await axios.post(`${this.api_url}/register`, this.regsiter_form_data);
                 console.log(response);
                 alert(response.data.message)
             }
@@ -125,45 +132,21 @@ export default {
         },
 
         async googleLogin() {
-        try {
-            const response = await googleAuthCodeLogin();
-            console.log("Handle the response", response);
-            console.log("decode credential: ", decodeCredential(response.credential))
-        } catch (error) {
-            console.error("Error during Google login:", error);
-          
-        }
+            try {
+                const response = await googleAuthCodeLogin();
+                // console.log("Handle the response", response);
+                const auth_code = { code: response.code };
+                const new_response = await axios.post(`${this.api_url}/google-auth`, auth_code);
+                console.log("response returned from backend", new_response);
+                alert(new_response.data.message);
+                localStorage.setItem("BNA", new_response.data.token);
+                this.$router.push("/profile");
+            } catch (error) {
+                console.error("Error during Google login:", error);
+            
+            }
         },
-
-        async googleAuth(response) {
-                // console.log(response)
-                console.log("decode credential: ", decodeCredential(response.credential));
-                const decoded_user_data = decodeCredential(response.credential);
-                const email = decoded_user_data.email;
-                const firstname = decoded_user_data.given_name;
-                const lastname = decoded_user_data.family_name;
-                const googleId = decoded_user_data.sub;
-                const picture = decoded_user_data.picture;
-                try {
-                    const userData = {
-                        email: email,
-                        firstname: firstname,
-                        lastname: lastname,
-                        googleId: googleId,
-                        picture: picture,
-                    }
-                    console.log("user data from google: ", userData)
-
-                    const response = await axios.post(`http://localhost:8000/api/google-auth`, userData);
-                    localStorage.setItem('life-gaurd', response.data.token);
-                    this.$router.push('/profile');
-                    // console.log(response);
-
-                }catch(error){
-                    console.log(error)
-                }
-        },
-
+ 
 
     }
 }

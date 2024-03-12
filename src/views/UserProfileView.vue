@@ -31,7 +31,7 @@ export default {
     methods: {
         async getUser(){
             const headers = {
-                Authorization : `JWT ${localStorage.getItem('life-gaurd')}`,
+                Authorization : `JWT ${localStorage.getItem('BNA')}`,
             }
 
             try{
