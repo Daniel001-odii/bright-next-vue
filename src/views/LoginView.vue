@@ -15,7 +15,7 @@
                             <p clas="p-0 m-0">Enter your credentials to log in to our platform.</p>
                             <input class="form_input" v-model="login_form_data.usernameOrEmail" type="email" placeholder="johndoe@gmail.com" required>
                             <input class="form_input" v-model="login_form_data.password" type="password" placeholder="password" required>
-                            <button type="submit" class="bg-green w-full py-3 text-white rounded-3xl">Continue</button>
+                            <button type="button" @click="login" class="bg-green w-full py-3 text-white rounded-3xl">Continue</button>
                         </div>
                     </form>
 
@@ -109,12 +109,13 @@ export default {
         async login(){
             try{
                 const response = await axios.post(`${this.api_url}/login`, this.login_form_data);
-                console.log(response);
-                const auth_code = { code: response.code }
-                const res = await axios.post(`${this.api_url}/google-auth`, auth_code );
+                // console.log(response);
+                localStorage.setItem("BNA", response.data.token);
+                alert(response.data.message);
+                this.$router.push("/profile");
             }
             catch(error){
-                console.error(error);
+                // console.error(error);
                 this.error = error.response.data.message;
             }
         },
