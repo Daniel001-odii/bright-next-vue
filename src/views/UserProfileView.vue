@@ -2,18 +2,17 @@
 <nav class="bg-white border-gray-200 dark:bg-gray-900">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
   <span href="https://flowbite.com/" class="flex items-center space-x-3 rtl:space-x-reverse">
-      <img v-if="user.avatar_url" src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
-      <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Bright Next</span>
+      <img src="https://assets-global.website-files.com/654a036a4d837081164c18b1/65861275fa179165cf72f181_New-Logo%20(1).png" class="h-[60px]" alt="Flowbite Logo" />
   </span>
   <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
       <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
         <span class="sr-only">Open user menu</span>
-        <img class="w-8 h-8 rounded-full" :src="user.avatar_url" alt="user photo">
+        <img  v-if="user.avatar_url" class="w-8 h-8 rounded-full" :src="user.avatar_url" alt="user photo">
       </button>
       <!-- Dropdown menu -->
       <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
         <div class="px-4 py-3">
-          <span class="block text-sm text-gray-900 dark:text-white">{{ user.firstname }} {{ user.lastname }} </span>
+          <span class="block text-sm text-gray-900 dark:text-white">{{ user.firstname }} {{ user.lastname }} {{ user.username }} </span>
           <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">{{ user.email }}</span>
         </div>
         <ul class="py-2" aria-labelledby="user-menu-button">
@@ -56,12 +55,14 @@
 </nav>
 
 
-  
+  <!-- {{ user }} -->
 
-<div class=" flex flex-col p-8 max-w-screen-xl justify-center items-center text-left  mx-auto">
-    <h1 class=" text-xl font-bold border self-start">Welcome, {{ user.firstname }}!</h1>
+<div class="px-8">
+    <h1 class=" text-xl font-bold self-start" v-if="user.firstname">Welcome, {{ user.firstname }}!</h1>
+    <h1 class=" text-xl font-bold self-start" v-if="user.username">Welcome, {{ user.username.split(" ")[0] }}!</h1>
+</div>
 
-    <div class=" flex flex-row flex-wrap justify-between mt-8 gap-3 w-full">
+<div class=" flex flex-row flex-wrap justify-between mt-8 gap-3 w-full p-8">
         <div class=" flex flex-row justify-between items-center bg-slate-100 rounded-xl p-3 gap-8 w-[300px]">
             <div>
                 <p class="font-bold">Enrolled Courses</p>
@@ -86,11 +87,7 @@
 
             </div>
         </div>
-
-
     </div>
-
-</div>
 
 
 
@@ -178,9 +175,9 @@
 <div class=" flex flex-col w-full p-8 max-w-screen-xl justify-start items-start text-left  mx-auto">
     <h1 class=" text-xl font-bold self-start">New Courses for you</h1>
 
-    <div class=" flex flex-row flex-wrap justify-start mt-8 gap-2 w-full" >
+    <div class=" flex flex-row flex-wrap justify-center mt-8 gap-2 w-full" >
        
-        <div v-for="course in 5" class="max-w-[320px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <div v-for="course in 3" class="max-w-[400px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
             <a href="#">
                 <img class="rounded-t-lg" src="https://flowbite.com/docs/images/blog/image-1.jpg" alt="" />
             </a>
