@@ -13,8 +13,7 @@ import '../src/assets/css/main.css'
 
 const app = createApp(App);
 
-// app.config.globalProperties.api_url = 'http://localhost:3000/api';
-app.config.globalProperties.api_url = 'https://bright-next-api.onrender.com/api';
+app.config.globalProperties.api_url = process.env.VUE_APP_API_URL;
 app.config.globalProperties.token = window.localStorage.getItem('BNA'); 
 
 app.use(vue3GoogleLogin, {clientId:CLIENT_ID}).use(store).use(router)

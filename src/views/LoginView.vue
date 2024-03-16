@@ -181,6 +181,7 @@ export default {
 
 
         async handleFacebookLogin(response) {
+            this.loading = true;
             console.log("Logged in with Facebook:", response);
 
             // Extract the access token from the response
@@ -207,9 +208,12 @@ export default {
             };
 
             try{
-                const response = await axios.post(`${this.api_url}/facebook-auth`, BNA_USER_DATA)
+                const response = await axios.post(`${this.api_url}/facebook-auth`, BNA_USER_DATA);
+                this.loading = true;
+
             }catch(error){
-                console.log("BNA error saving user info", error)
+                console.log("BNA error saving user info", error);
+                this.loading = false;
             }
             // format of data returned:
             // "name"
