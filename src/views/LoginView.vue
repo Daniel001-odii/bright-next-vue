@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="mt-5">
-                        <v-facebook-login app-id="903137658112158" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
+                        <v-facebook-login app-id="903137658112158" @login="handleFacebookLogin" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
                             login with facebook
                         </v-facebook-login>
                     </div>
@@ -174,6 +174,17 @@ export default {
                 console.error("Error during Google login:", error);
                 this.loading = false;
             }
+        },
+
+        handleFacebookLogin(response) {
+            console.log("Logged in with Facebook:", response);
+            // Access user details
+            const userDetails = response.profile;
+            // Display user details in the console
+            console.log("User's Name:", userDetails.name);
+            console.log("User's Email:", userDetails.email);
+            console.log("User's Profile Picture:", userDetails.picture.data.url);
+            // You can access other user details as needed
         },
  
 
