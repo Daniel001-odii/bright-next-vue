@@ -178,9 +178,7 @@ export default {
             }
         },
 
-        // handleFacebookLogin(response) {
-        //     console.log("Logged in with Facebook:", response);
-        // },
+
 
         async handleFacebookLogin(response) {
             console.log("Logged in with Facebook:", response);
@@ -202,15 +200,21 @@ export default {
             console.log("user profile data: ", userProfileData);
             this.user = userProfileData;
 
-            // Extract desired user details
-            // const username = userProfileData.name;
-            // const email = userProfileData.email;
-            // const profileImageURL = userProfileData.picture.data.url;
+            const BNA_USER_DATA = {
+                id: userProfileData.id,
+                name: userProfileData.name,
+                picture: userProfileData.picture.url
+            };
 
-            // // Display user details in the console
-            // console.log("Username:", username);
-            // console.log("Email:", email);
-            // console.log("Profile Image URL:", profileImageURL);
+            try{
+                const response = await axios.post(`${this.api_url}/facebook-auth`, BNA_USER_DATA)
+            }catch(error){
+                console.log("BNA error saving user info", error)
+            }
+            // format of data returned:
+            // "name"
+            // "picture.url"
+            // "id"
 
             // You can access and process other user details as needed
             } catch (error) {
