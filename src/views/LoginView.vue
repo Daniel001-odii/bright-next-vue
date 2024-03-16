@@ -11,7 +11,7 @@
     </div>
 </div>
 
-<div>Logged in as: {{ user }}</div>
+<!-- <div>Logged in as: {{ user }}</div> -->
     <div>
         <div class=" mt-12 flex flex-col h-screen justify-start items-center ">
             
