@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="mt-5">
-                        <v-facebook-login app-id="903137658112158" @login="handleFacebookLogin" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
+                        <v-facebook-login app-id="7274975539289923" @login="handleFacebookLogin" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
                             login with facebook
                         </v-facebook-login>
                     </div>
@@ -193,7 +193,7 @@ export default {
     mounted(){
         window.fbAsyncInit = function() {
         FB.init({
-        appId: '903137658112158',
+        appId: '7274975539289923',
         autoLogAppEvents: true,
         xfbml: true,
         version: 'v12.0' // Replace with the latest Facebook SDK version
