@@ -184,7 +184,7 @@ export default {
             console.log("Logged in with Facebook:", response);
 
             // Extract the access token from the response
-            const accessToken = response.accessToken;
+            const accessToken = response.authResponse.accessToken;
 
             try {
             // Fetch user profile details from Facebook's Graph API
