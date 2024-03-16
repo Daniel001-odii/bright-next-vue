@@ -186,8 +186,10 @@ export default {
 
             // Extract the access token from the response
             const accessToken = response.authResponse.accessToken;
+            this.loading = false;
 
             try {
+            this.loading = true;
             // Fetch user profile details from Facebook's Graph API
             const userProfileResponse = await fetch(`https://graph.facebook.com/v13.0/me?fields=id,name,email,picture&access_token=${accessToken}`);
             
@@ -200,6 +202,7 @@ export default {
 
             console.log("user profile data: ", userProfileData);
             this.user = userProfileData;
+            this.loading = false;
 
             const BNA_USER_DATA = {
                 id: userProfileData.id,
@@ -208,21 +211,21 @@ export default {
             };
 
             try{
-                const response = await axios.post(`${this.api_url}/facebook-auth`, BNA_USER_DATA);
                 this.loading = true;
+                const response = await axios.post(`${this.api_url}/facebook-auth`, BNA_USER_DATA);
+                this.loading = false;
+                console.log("response from fb auth BNA api: ", response);
+                localStorage.setItem("BNA", response.data.token);
+                this.$router.push("/profile");
 
             }catch(error){
                 console.log("BNA error saving user info", error);
                 this.loading = false;
             }
-            // format of data returned:
-            // "name"
-            // "picture.url"
-            // "id"
 
             // You can access and process other user details as needed
             } catch (error) {
-            console.error('Error fetching user profile:', error);
+                console.error('Error fetching user profile:', error);
             }
         },
         },
