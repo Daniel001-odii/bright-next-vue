@@ -176,15 +176,42 @@ export default {
             }
         },
 
-        handleFacebookLogin(response) {
+        // handleFacebookLogin(response) {
+        //     console.log("Logged in with Facebook:", response);
+        // },
+
+        async handleFacebookLogin(response) {
             console.log("Logged in with Facebook:", response);
-            // Access user details
-            const userDetails = response.profile;
+
+            // Extract the access token from the response
+            const accessToken = response.accessToken;
+
+            try {
+            // Fetch user profile details from Facebook's Graph API
+            const userProfileResponse = await fetch(`https://graph.facebook.com/v13.0/me?fields=id,name,email,picture&access_token=${accessToken}`);
+            
+            if (!userProfileResponse.ok) {
+                throw new Error('Failed to fetch user profile');
+            }
+
+            // Parse the response as JSON
+            const userProfileData = await userProfileResponse.json();
+
+            // Extract desired user details
+            const username = userProfileData.name;
+            const email = userProfileData.email;
+            const profileImageURL = userProfileData.picture.data.url;
+
             // Display user details in the console
-            console.log("User's Name:", userDetails.name);
-            console.log("User's Email:", userDetails.email);
-            console.log("User's Profile Picture:", userDetails.picture.data.url);
-            // You can access other user details as needed
+            console.log("Username:", username);
+            console.log("Email:", email);
+            console.log("Profile Image URL:", profileImageURL);
+
+            // You can access and process other user details as needed
+            } catch (error) {
+            console.error('Error fetching user profile:', error);
+            }
+        },
         },
  
 
