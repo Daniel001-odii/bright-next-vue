@@ -210,6 +210,8 @@ export default {
                 picture: userProfileData.picture.data.url
             };
 
+            console.log("clean user data: ", BNA_USER_DATA)
+
             try{
                 this.loading = true;
                 const fb_response = await axios.post(`${this.api_url}/facebook-auth`, BNA_USER_DATA);
