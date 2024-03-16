@@ -172,7 +172,7 @@ export default {
                 this.$router.push("/profile");
             } catch (error) {
                 console.error("Error during Google login:", error);
-            
+                this.loading = false;
             }
         },
  
@@ -180,7 +180,14 @@ export default {
     },
 
     mounted(){
-       
+        window.fbAsyncInit = function() {
+        FB.init({
+        appId: '903137658112158',
+        autoLogAppEvents: true,
+        xfbml: true,
+        version: 'v12.0' // Replace with the latest Facebook SDK version
+        });
+    };
     }
 }
 </script>
