@@ -39,13 +39,18 @@
                     </div>
 
                     <div class="mt-5">
-                        <LinkedInSignin :client-id="linkediInClientId" css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"/>
+                        <!-- <button @click="linkedInLogin">Linkedin</button> -->
+                        <LinkedInSignin
+                            :client-id="linkediInClientId"
+                            css="flex justify-center py-2 px-2 border border-slate-300 rounded shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"
+                        />
+                        <!-- <LinkedInSignin :client-id="linkediInClientId" css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"/> -->
                     </div>
 
                     <div class="mt-5">
-                        <VFacebookLogin app-id="903137658112158" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
+                        <v-facebook-login app-id="903137658112158" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
                             login with facebook
-                        </VFacebookLogin>
+                        </v-facebook-login>
                     </div>
 
                     <div class="mt-5">
@@ -70,9 +75,9 @@
                         <GoogleAuthButton @click="googleLogin"/>
                     </div>
 
-                    <div class="mt-5">
+                    <!-- <div class="mt-5">
                         <LinkedInSignin :client-id="linkediInClientId" css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"/>
-                    </div>
+                    </div> -->
 
                     <div class="mt-5">
                         <VFacebookLogin app-id="903137658112158" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
@@ -95,8 +100,10 @@ import axios from 'axios'
 
 import { LinkedInSignin } from "linkedin-auth";
 // const linkediInClientId = "86zgoouj5v6t14";
+import { useLinkedIn, LinkedInCallback } from 'vue3-linkedin-login'
 
 import VFacebookLogin from 'vue-facebook-login-component-next'
+
 
 export default {
     name: "LoginView",
@@ -170,6 +177,10 @@ export default {
         },
  
 
+    },
+
+    mounted(){
+       
     }
 }
 </script>
