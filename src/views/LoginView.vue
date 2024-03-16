@@ -233,14 +233,14 @@ export default {
         },
 
     mounted(){
-        window.fbAsyncInit = function() {
-        FB.init({
-        appId: '7274975539289923',
-        autoLogAppEvents: false,
-        xfbml: false,
-        version: 'v12.0' // Replace with the latest Facebook SDK version
-        });
-    };
+        // window.fbAsyncInit = function() {
+        // FB.init({
+        // appId: '7274975539289923',
+        // autoLogAppEvents: false,
+        // xfbml: false,
+        // version: 'v12.0'
+        // });
+        // };
     }
 }
 </script>
