@@ -213,9 +213,6 @@ export default {
             }
         },
         },
- 
-
-    },
 
     mounted(){
         window.fbAsyncInit = function() {
