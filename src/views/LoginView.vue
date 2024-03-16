@@ -11,7 +11,7 @@
     </div>
 </div>
 
-
+<div>Logged in as: {{ user }}</div>
     <div>
         <div class=" mt-12 flex flex-col h-screen justify-start items-center ">
             
@@ -124,6 +124,8 @@ export default {
             error: '',
             callback: this.googleAuth,
             loading: false,
+
+            user: '',
         }
     },
     methods: {
@@ -197,15 +199,18 @@ export default {
             // Parse the response as JSON
             const userProfileData = await userProfileResponse.json();
 
-            // Extract desired user details
-            const username = userProfileData.name;
-            const email = userProfileData.email;
-            const profileImageURL = userProfileData.picture.data.url;
+            console.log("user profile data: ", userProfileData);
+            this.user = userProfileData;
 
-            // Display user details in the console
-            console.log("Username:", username);
-            console.log("Email:", email);
-            console.log("Profile Image URL:", profileImageURL);
+            // Extract desired user details
+            // const username = userProfileData.name;
+            // const email = userProfileData.email;
+            // const profileImageURL = userProfileData.picture.data.url;
+
+            // // Display user details in the console
+            // console.log("Username:", username);
+            // console.log("Email:", email);
+            // console.log("Profile Image URL:", profileImageURL);
 
             // You can access and process other user details as needed
             } catch (error) {
