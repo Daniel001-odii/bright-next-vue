@@ -207,15 +207,15 @@ export default {
             const BNA_USER_DATA = {
                 id: userProfileData.id,
                 name: userProfileData.name,
-                picture: userProfileData.picture.url
+                picture: userProfileData.picture.data.url
             };
 
             try{
                 this.loading = true;
-                const response = await axios.post(`${this.api_url}/facebook-auth`, BNA_USER_DATA);
+                const fb_response = await axios.post(`${this.api_url}/facebook-auth`, BNA_USER_DATA);
                 this.loading = false;
-                console.log("response from fb auth BNA api: ", response);
-                localStorage.setItem("BNA", response.data.token);
+                console.log("response from fb auth BNA api: ", fb_response);
+                localStorage.setItem("BNA", fb_response.data.token);
                 this.$router.push("/profile");
 
             }catch(error){
