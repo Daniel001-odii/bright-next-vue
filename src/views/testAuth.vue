@@ -1,74 +1,35 @@
 <template>
-  <div>
-    <button @click="loginWithFacebook" id="fb-login-button">Login with Facebook</button>
-    <div id="profile-info" style="display: none;">
-      <p id="profile-name"></p>
-      <div id="profile-picture"></div>
-    </div>
-  </div>
+  <button @click="linkedInLogin">test</button>
 </template>
 
-<script>
-export default {
-  mounted() {
-    this.initializeFacebookSDK();
-  },
-  methods: {
-    initializeFacebookSDK() {
-      // Initialize Facebook SDK
-      window.fbAsyncInit = function() {
-        FB.init({
-          appId: '7274975539289923',
-          cookie: true,
-          xfbml: true,
-          version: 'v12.0'
-        });
+<script setup>
+  import { onMounted } from "vue";
+  import { useLinkedIn, LinkedInCallback } from "vue3-linkedin-login";
+  import axios from "axios";
 
-        // Check login status
-        FB.getLoginStatus(response => {
-          this.statusChangeCallback(response);
-        });
-      };
+  const { linkedInLogin, exchangeCodeForToken, getAccount, getMail } =
+    useLinkedIn({
+      clientId: "86zgoouj5v6t14",
+      clientSecret: "orlZyosk0IXKu7lc",
+      redirectUri: "http://localhost:8081/login",
 
-      // Load Facebook SDK asynchronously
-      (function(d, s, id) {
-        var js,
-          fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s);
-        js.id = id;
-        js.src = 'https://connect.facebook.net/en_US/sdk.js';
-        fjs.parentNode.insertBefore(js, fjs);
-      })(document, 'script', 'facebook-jssdk');
-    },
-    statusChangeCallback(response) {
-      if (response.status === 'connected') {
-        // User is logged into your webpage and Facebook.
-        console.log('Logged in and authenticated');
-        this.getUserProfile();
-      } else {
-        // User is not logged into your webpage or Facebook.
-        console.log('Not logged into your webpage or Facebook.');
-      }
-    },
-    getUserProfile() {
-      FB.api('/me', { fields: 'name,picture' }, response => {
-        console.log('Successful login for: ' + response.name);
-        document.getElementById('profile-name').innerText = 'Name: ' + response.name;
-        document.getElementById('profile-picture').innerHTML =
-          '<img src="' + response.picture.data.url + '" alt="Profile Picture">';
-        document.getElementById('profile-info').style.display = 'block';
-        document.getElementById('fb-login-button').style.display = 'none';
-      });
-    },
-    loginWithFacebook() {
-      FB.login(
-        response => {
-          this.statusChangeCallback(response);
-        },
-        { scope: 'public_profile,email' }
-      );
-    }
-  }
-};
+      // onSuccess: console.log("your url: ", window.location.href),
+      // https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&client_id=86zgoouj5v6t14&client_secret=orlZyosk0IXKu7lc&code=AQSmhN3z4iX_QQJK1BmR1sthOus_SiVrQ5wIHKobMC4hdBLGLxBPh4xytTNPGwoNlOZ-6VaHL8NzLAdDg8lrmGCVAH8zE2fgPtZTF6thTAmCirAD3pUXPRk8IJSAMKsbfhCS10agJc6S81xieKX53sMTkmOWb_oa49_69hqTDSiw4mjac2ejSS_xhUuUBAP2c7oLhfD2tngW0NhfVqY&redirect_uri=http://localhost:8080
+      
+      onSuccess: async (code) => {
+        console.log("login success")
+        // const MY_EXCHANGE = await axios.get(`https://linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&client_id=${clientId}&client_secret=${clientSecret}&code=${code}&redirect_uri=${redirectUri}`)
+
+        // console.log("see your code results bro: ", MY_EXCHANGE);
+      },
+
+      scope: "email openid profile",
+      onError: (error) => {
+        console.log(error);
+      },
+    });
+
+  onMounted(() => {
+    LinkedInCallback();
+  });
 </script>

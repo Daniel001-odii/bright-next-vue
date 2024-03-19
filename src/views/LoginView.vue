@@ -1,5 +1,9 @@
 <template>
 
+<div v-if="linkedin_login_code" class="bg-blue-100 p-5">
+    hello world
+    <button class="border bg-blue-600 p-3 text-white" @click="handleLinkedinLogin(linkedin_login_code, 'http://localhost:8081/login')">Continue with linkedin</button>
+</div>
 
 <div v-if="loading" class=" flex flex-col h-screen w-screen fixed z-10 bg-slate-50 justify-center items-center opacity-90">
     <div role="status">
@@ -39,12 +43,13 @@
                     </div>
 
                     <div class="mt-5">
-                        <!-- <button @click="linkedInLogin">Linkedin</button> -->
                         <LinkedInSignin
-                            :client-id="linkediInClientId"
-                            css="flex justify-center py-2 px-2 border border-slate-300 rounded shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"
+                            :client-id="linkedin_client_id"
+                            :scope="'email openid profile'"
+                            :redirectUri="'http://localhost:8081/login'"
+                            css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"
                         />
-                        <!-- <LinkedInSignin :client-id="linkediInClientId" css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"/> -->
+                        
                     </div>
 
                     <div class="mt-5">
@@ -95,12 +100,9 @@
 <script>
 import GoogleAuthButton from '@/components/GoogleAuthButton.vue';
 import { googleAuthCodeLogin } from 'vue3-google-login';
-// import { decodeCredential } from 'vue3-google-login';
 import axios from 'axios'
 
 import { LinkedInSignin } from "linkedin-auth";
-// const linkediInClientId = "86zgoouj5v6t14";
-import { useLinkedIn, LinkedInCallback } from 'vue3-linkedin-login'
 
 import VFacebookLogin from 'vue-facebook-login-component-next'
 
@@ -110,7 +112,11 @@ export default {
     components: {GoogleAuthButton, LinkedInSignin, VFacebookLogin},
     data(){
         return{
-            linkediInClientId: '86zgoouj5v6t14',
+            linkedin_client_id: '86zgoouj5v6t14',
+            linkedin_client_secret: 'orlZyosk0IXKu7lc',
+            linkedin_login_code: '',
+            redirect_uri: '',
+
             currentTab: 'login',
             login_form_data: {
                 usernameOrEmail: '',
@@ -178,8 +184,6 @@ export default {
             }
         },
 
-
-
         async handleFacebookLogin(response) {
             this.loading = true;
             console.log("Logged in with Facebook:", response);
@@ -230,18 +234,37 @@ export default {
                 console.error('Error fetching user profile:', error);
             }
         },
-        },
+
+        async handleLinkedinLogin(linkedin_login_code, redirect_uri) {
+            try{
+                const response = await axios.post(`https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&client_id=${this.linkedin_client_id}&client_secret=${this.linkedin_client_secret}&code=${linkedin_login_code}&redirect_uri=${redirect_uri}`);
+                console.log("Your first response from linkedin: ", response)
+            }catch(error){
+                console.log("error going to linkedin: ", error);
+            }
+        
+        }
+    },
+
+    created() {
+        this.redirect_uri = window.location.href;
+    },
 
     mounted(){
-        // window.fbAsyncInit = function() {
-        // FB.init({
-        // appId: '7274975539289923',
-        // autoLogAppEvents: false,
-        // xfbml: false,
-        // version: 'v12.0'
-        // });
-        // };
-    }
+        console.log("your current route : ", window.location.href);
+        
+        if(this.$route.query.code){
+            // console.log("user code found!: ", this.$route.query.code);
+            this.linkedin_login_code = this.$route.query.code;
+        };
+
+        if(this.linkedin_login_code){
+            console.log("using prefilled details: ", this.linkedin_login_code, "redirecUri: ", this.redirect_uri)
+            // this.handleLinkedinLogin(this.linkedin_login_code, 'http://localhost:8081/login');
+
+        }
+        
+    },
 }
 </script>
 <style scoped>
