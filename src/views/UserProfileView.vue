@@ -58,8 +58,8 @@
   <!-- {{ user }} -->
 
 <div class="px-8">
-    <h1 class=" text-xl font-bold self-start" v-if="user.firstname">Welcome, {{ user.firstname }}!</h1>
-    <h1 class=" text-xl font-bold self-start" v-if="user.username">Welcome, {{ user.username.split(" ")[0] }}!</h1>
+    <h1 class=" text-xl font-bold self-start capitalize" v-if="user.firstname">Welcome, {{ user.firstname }}!</h1>
+    <h1 class=" text-xl font-bold self-start capitalize" v-if="user.username">Welcome, {{ user.username.split(" ")[0] }}!</h1>
 </div>
 
 <div class=" flex flex-row flex-wrap justify-between mt-8 gap-3 w-full p-8">
@@ -77,8 +77,8 @@
 
         <div class=" flex flex-row justify-between items-center bg-slate-100 rounded-xl p-3 gap-8 w-[300px]">
             <div>
-                <p class="font-bold">Enrolled Courses</p>
-                <span>6</span>
+                <p class="font-bold">Certifications</p>
+                <span>2</span>
             </div>
             <div>
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
