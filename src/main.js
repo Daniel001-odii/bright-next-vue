@@ -14,6 +14,9 @@ import '../src/assets/css/main.css'
 const app = createApp(App);
 
 app.config.globalProperties.api_url = process.env.VUE_APP_API_URL;
+app.config.globalProperties.linkedin_callback = process.env.VUE_APP_LINKEDIN_CALLBACK_URI;
+
+
 app.config.globalProperties.token = window.localStorage.getItem('BNA'); 
 
 app.use(vue3GoogleLogin, {clientId:CLIENT_ID}).use(store).use(router)

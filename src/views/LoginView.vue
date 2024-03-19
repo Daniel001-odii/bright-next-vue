@@ -1,10 +1,5 @@
 <template>
-
-<div v-if="linkedin_login_code" class="bg-blue-100 p-5">
-    hello world
-    <button class="border bg-blue-600 p-3 text-white" @click="handleLinkedinLogin(linkedin_login_code, redirect_uri)">Continue with linkedin</button>
-</div>
-
+{{  redirect_uri }} linkedin
 <div v-if="loading" class=" flex flex-col h-screen w-screen fixed z-10 bg-slate-50 justify-center items-center opacity-90">
     <div role="status">
         <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,20 +69,15 @@
                         </div>
                     </form>
                     <div class="mt-5">
-                        <!-- <GoogleLogin class="!w-full" :callback="callback" auto-login/> -->
-                            <!-- <GoogleAuthButton/> -->
-                        <!-- </GoogleLogin> -->
-                        <GoogleAuthButton @click="googleLogin"/>
+                       
                     </div>
 
-                    <!-- <div class="mt-5">
-                        <LinkedInSignin :client-id="linkediInClientId" css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"/>
-                    </div> -->
+                    <div class="mt-5">
+                       
+                    </div>
 
                     <div class="mt-5">
-                        <VFacebookLogin app-id="903137658112158" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
-                            login with facebook
-                        </VFacebookLogin>
+                       
                     </div>
                     
                 </div>
@@ -115,7 +105,7 @@ export default {
             linkedin_client_id: '86zgoouj5v6t14',
             linkedin_client_secret: 'orlZyosk0IXKu7lc',
             linkedin_login_code: '',
-            redirect_uri: 'https://bright-next.vercel.app/login',
+            redirect_uri: this.linkedin_callback,
 
             currentTab: 'login',
             login_form_data: {
@@ -235,19 +225,21 @@ export default {
             }
         },
 
-        async handleLinkedinLogin(linkedin_login_code, redirect_uri) {
-            try{
-                const response = await axios.post(`https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&client_id=${this.linkedin_client_id}&client_secret=${this.linkedin_client_secret}&code=${linkedin_login_code}&redirect_uri=${redirect_uri}`);
-                console.log("Your first response from linkedin: ", response)
-            }catch(error){
-                console.log("error going to linkedin: ", error);
+        async handleLinkedinLogin() {
+            const code = this.linkedin_login_code;
+            this.loading = true;
+            try {
+                const response = await axios.post(`${this.api_url}/linkedin-auth/${code}`);
+                
+                this.loading = false;
+                console.log("from BNA API LinkedIn:", response);
+                localStorage.setItem("BNA", response.data.token);
+                this.$router.push("/profile");
+            } catch (error) {
+                console.log("Error while requesting access token from LinkedIn:", error);
+                this.loading = false;
             }
-        
         }
-    },
-
-    created() {
-        // this.redirect_uri = window.location.href;
     },
 
     mounted(){
@@ -259,8 +251,8 @@ export default {
         };
 
         if(this.linkedin_login_code){
-            console.log("using prefilled details: ", this.linkedin_login_code, "redirecUri: ", this.redirect_uri)
-            // this.handleLinkedinLogin(this.linkedin_login_code, 'http://localhost:8081/login');
+            console.log("using prefilled details: ", this.linkedin_login_code)
+            this.handleLinkedinLogin()
 
         }
         
