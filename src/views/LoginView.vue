@@ -242,10 +242,9 @@ export default {
     },
 
     mounted(){
-        console.log("your current route : ", window.location.href);
         
         if(this.$route.query.code){
-            // console.log("user code found!: ", this.$route.query.code);
+            console.log("user code found!: ", this.$route.query.code);
             this.linkedin_login_code = this.$route.query.code;
         };
 
