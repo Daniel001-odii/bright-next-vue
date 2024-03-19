@@ -2,7 +2,7 @@
 
 <div v-if="linkedin_login_code" class="bg-blue-100 p-5">
     hello world
-    <button class="border bg-blue-600 p-3 text-white" @click="handleLinkedinLogin(linkedin_login_code, 'http://localhost:8081/login')">Continue with linkedin</button>
+    <button class="border bg-blue-600 p-3 text-white" @click="handleLinkedinLogin(linkedin_login_code, redirect_uri')">Continue with linkedin</button>
 </div>
 
 <div v-if="loading" class=" flex flex-col h-screen w-screen fixed z-10 bg-slate-50 justify-center items-center opacity-90">
@@ -46,7 +46,7 @@
                         <LinkedInSignin
                             :client-id="linkedin_client_id"
                             :scope="'email openid profile'"
-                            :redirectUri="'http://localhost:8081/login'"
+                            :redirectUri="redirect_uri"
                             css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"
                         />
                         
@@ -115,7 +115,7 @@ export default {
             linkedin_client_id: '86zgoouj5v6t14',
             linkedin_client_secret: 'orlZyosk0IXKu7lc',
             linkedin_login_code: '',
-            redirect_uri: '',
+            redirect_uri: 'https://bright-next.vercel.app/login',
 
             currentTab: 'login',
             login_form_data: {
@@ -247,7 +247,7 @@ export default {
     },
 
     created() {
-        this.redirect_uri = window.location.href;
+        // this.redirect_uri = window.location.href;
     },
 
     mounted(){
