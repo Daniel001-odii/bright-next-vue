@@ -2,7 +2,7 @@
 
 <div v-if="linkedin_login_code" class="bg-blue-100 p-5">
     hello world
-    <button class="border bg-blue-600 p-3 text-white" @click="handleLinkedinLogin(linkedin_login_code, redirect_uri')">Continue with linkedin</button>
+    <button class="border bg-blue-600 p-3 text-white" @click="handleLinkedinLogin(linkedin_login_code, redirect_uri)">Continue with linkedin</button>
 </div>
 
 <div v-if="loading" class=" flex flex-col h-screen w-screen fixed z-10 bg-slate-50 justify-center items-center opacity-90">
