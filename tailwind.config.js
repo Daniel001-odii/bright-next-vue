@@ -8,7 +8,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        green: "#00491e",
+        bna_green: "#31B31C",
+        bna_green_dark: "#00491e",
+
+        bna_blue: "#1E77DD",
       }
     },
   },

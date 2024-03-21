@@ -9,7 +9,8 @@ import vue3GoogleLogin from 'vue3-google-login'
 const CLIENT_ID = "702280900258-fonncafu867lccckk6ppm6a2eg2e597j.apps.googleusercontent.com"
 
 import '../src/assets/css/main.css'
-
+// boostrap icons...
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const app = createApp(App);
 

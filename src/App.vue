@@ -1,6 +1,6 @@
 <template>
 
-  <div class="flex flex-col max-w-screen-xl  mx-auto">
+  <div class="flex flex-col max-w-screen-3xl  mx-auto">
     <router-view/>
   </div>
 
@@ -17,5 +17,5 @@ export default {
 </script>
 
 <style>
-
+  
 </style>
