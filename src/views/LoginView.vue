@@ -10,7 +10,7 @@
 </div>
 
 <!-- <div>Logged in as: {{ user }}</div> -->
-    <div>
+    <div class="bg-white">
         <div class=" mt-12 flex flex-col h-screen justify-start items-center ">
             
             <div class=" rounded-3xl shadow-lg p-8 rounded-4xl flex flex-col w-fit">
@@ -68,15 +68,25 @@
                         </div>
                     </form>
                     <div class="mt-5">
-                       
+                        <!-- <GoogleLogin class="!w-full" :callback="callback" auto-login prompt> -->
+                            <GoogleAuthButton @click="googleLogin"/>
+                        <!-- </GoogleLogin> -->
                     </div>
 
                     <div class="mt-5">
-                       
+                        <LinkedInSignin
+                            :client-id="linkedin_client_id"
+                            :scope="'email openid profile'"
+                            :redirectUri="redirect_uri"
+                            css="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-sm font-medium text-slate-500 hover:!bg-slate-50 cursor-pointer"
+                        />
+                        
                     </div>
 
                     <div class="mt-5">
-                       
+                        <v-facebook-login app-id="7274975539289923" @login="handleFacebookLogin" class=" flex flex-row text-sm justify-center items-center gap-3 border w-full rounded-3xl p-3 hover:bg-slate-50">
+                            login with facebook
+                        </v-facebook-login>
                     </div>
                     
                 </div>
@@ -132,7 +142,7 @@ export default {
                 localStorage.setItem("BNA", response.data.token);
                 alert(response.data.message);
                 this.loading = false;
-                this.$router.push("/profile");
+                this.$router.push("/bn/dashboard");
             }
             catch(error){
                 // console.error(error);
@@ -166,7 +176,7 @@ export default {
                 this.loading = false;
                 alert(new_response.data.message);
                 localStorage.setItem("BNA", new_response.data.token);
-                this.$router.push("/profile");
+                this.$router.push("/bn/dashboard");
             } catch (error) {
                 console.error("Error during Google login:", error);
                 this.loading = false;
@@ -211,7 +221,7 @@ export default {
                 this.loading = false;
                 console.log("response from fb auth BNA api: ", fb_response);
                 localStorage.setItem("BNA", fb_response.data.token);
-                this.$router.push("/profile");
+                this.$router.push("/bn/dashboard");
 
             }catch(error){
                 console.log("BNA error saving user info", error);
@@ -233,7 +243,7 @@ export default {
                 this.loading = false;
                 console.log("from BNA API LinkedIn:", response);
                 localStorage.setItem("BNA", response.data.token);
-                this.$router.push("/profile");
+                this.$router.push("/bn/dashboard");
             } catch (error) {
                 console.log("Error while requesting access token from LinkedIn:", error);
                 this.loading = false;

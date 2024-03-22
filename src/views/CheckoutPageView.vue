@@ -40,10 +40,13 @@
 
         </section>
 
+<!-- {{ user }} -->
+
         <section class=" w-full flex flex-col md:ps-8 mt-20">
             <div class="flex flex-col md:flex-row gap-3 p-3">
                 <div class=" w-full md:w-[60%] mt-3">
-                    <button class=" self-start font-bold text-bna_blue"> 
+                    
+                    <button @click="$router.go(-1)" class=" self-start font-bold text-bna_blue"> 
                         <span><i class="bi bi-chevron-left"></i> Go back</span>
                     </button>
 
@@ -54,22 +57,22 @@
                                 <div class="flex flex-row gap-10 flex-wrap">
                                     <label class=" flex flex-col grow">
                                         <span>FIRST NAME*</span>
-                                        <input type="name" placeholder="Firstname" name="firstname" class="form_input">
+                                        <input type="name" placeholder="Firstname" name="firstname" class="form_input" v-model="user.firstname" :disabled="user">
                                     </label>
                                     <label class=" flex flex-col grow">
                                         <span>LAST NAME*</span>
-                                        <input type="name" placeholder="Lastname" name="firstname" class="form_input">
+                                        <input type="name" placeholder="Lastname" name="firstname" class="form_input" v-model="user.lastname" :disabled="user">
                                     </label>
                                 </div>
 
                                 <div class="flex flex-row gap-10 flex-wrap">
                                     <label class=" flex flex-col grow">
                                         <span>EMAIL*</span>
-                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email" class="form_input">
+                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email" class="form_input" v-model="user.email" :disabled="user">
                                     </label>
                                     <label class=" flex flex-col grow">
                                         <span>CONFIRM EMAIL*</span>
-                                        <input type="name" placeholder="e.g johndoe@gmail.com" name="email_confirmation" class="form_input">
+                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email_confirmation" class="form_input" v-model="user.email" :disabled="user">
                                     </label>
                                 </div>
 
@@ -132,7 +135,7 @@
                 </div>
 
                 <div class="w-full md:w-[40%] mt-3 md:m-0">
-                    <button class=" self-start font-bold text-bna_green"> 
+                    <button @click="$router.go(-1)" class=" self-start font-bold text-bna_green"> 
                         <span>Keep Shopping <i class="bi bi-chevron-right"></i></span>
                     </button>
                     <div class="mt-3">
@@ -175,10 +178,14 @@
 </template>
 
 <script>
+import axios from 'axios';
+
+
     export default {
         name: "CheckoutPageView",
         data(){
             return{
+                user: '',
                 tab: 0,
                 courses: [
                     {id: 0, title: "Basic Knowledge of AI and Machine Learning", amount: 150},
@@ -198,6 +205,26 @@
                     }
                 // }
             },
+
+            async getUser(){
+                const headers = {
+                    Authorization : `JWT ${localStorage.getItem('BNA')}`,
+                }
+
+                try{
+                    const res = await axios.get(`${this.api_url}/get-user`, { headers });
+                    this.user = res.data.user;
+                    this.user_joined = res.data.user.createdAt;
+                    // console.log(res);
+                }
+                catch(error){
+                    alert(error)
+                }
+            },
+        },
+
+        mounted(){
+            this.getUser();
         }
     }
 </script>
@@ -205,6 +232,10 @@
 <style scoped>
     .form_input{
         @apply bg-gray-100 border rounded-md p-3
+    }
+
+    .form_input:disabled{
+        @apply text-gray-400
     }
 
     .form_btn{

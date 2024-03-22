@@ -22,7 +22,7 @@
             const response = await axios.post(`${this.api_url}/google-auth`, userData);
             localStorage.setItem('BNA', response.data.token);
             alert("login successful!");
-            this.$router.push('/profile');
+            this.$router.push('/bn/dashboard');
             // console.log(response);
 
         }catch(error){
