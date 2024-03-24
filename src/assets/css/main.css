@@ -4,5 +4,5 @@
 
 
 .bna_btn{
-    @apply font-bold text-sm px-6 py-6 rounded-3xl text-white
+    @apply font-bold text-sm px-6 py-6 rounded-3xl text-white hover:bg-opacity-90
 }

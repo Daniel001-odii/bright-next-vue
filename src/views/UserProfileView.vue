@@ -13,7 +13,7 @@
         </div>
 
         <div class=" flex flex-row flex-wrap justify-between mt-8 gap-3 w-full p-8">
-                <div class=" flex flex-row justify-between items-center bg-slate-100 rounded-xl p-3 gap-8 w-[300px]">
+                <div class=" flex flex-row justify-between items-center bg-white rounded-xl p-3 gap-8 w-[300px]">
                     <div>
                         <p class="font-bold">Enrolled Courses</p>
                         <span>6</span>
@@ -25,7 +25,7 @@
                     </div>
                 </div>
 
-                <div class=" flex flex-row justify-between items-center bg-slate-100 rounded-xl p-3 gap-8 w-[300px]">
+                <div class=" flex flex-row justify-between items-center bg-white rounded-xl p-3 gap-8 w-[300px]">
                     <div>
                         <p class="font-bold">Certifications</p>
                         <span>2</span>
@@ -44,19 +44,16 @@
         <div class=" p-8 relative overflow-x-auto">
             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
-                    Courses
-                    <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">Browse a list of Flowbite products designed to help you work and play, stay organized, get answers, keep in touch, grow your business, and more.</p>
+                    Enrolled Courses
+                    <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">Browse the list of courses you have enrolled in with the number of modules for each course and price tags attached.</p>
                 </caption>
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" class="px-6 py-3">
-                            Product name
+                            Course
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Color
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Category
+                            Modules
                         </th>
                         <th scope="col" class="px-6 py-3">
                             Price
@@ -69,13 +66,10 @@
                 <tbody>
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Apple MacBook Pro 17"
+                            Web Development Bootcamp
                         </th>
                         <td class="px-6 py-4">
-                            Silver
-                        </td>
-                        <td class="px-6 py-4">
-                            Laptop
+                            10
                         </td>
                         <td class="px-6 py-4">
                             $2999
@@ -86,33 +80,13 @@
                     </tr>
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Microsoft Surface Pro
+                            Data Science Fundamentals
                         </th>
                         <td class="px-6 py-4">
-                            White
-                        </td>
-                        <td class="px-6 py-4">
-                            Laptop PC
+                            8
                         </td>
                         <td class="px-6 py-4">
                             $1999
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-                    <tr class="bg-white dark:bg-gray-800">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Magic Mouse 2
-                        </th>
-                        <td class="px-6 py-4">
-                            Black
-                        </td>
-                        <td class="px-6 py-4">
-                            Accessories
-                        </td>
-                        <td class="px-6 py-4">
-                            $99
                         </td>
                         <td class="px-6 py-4 text-right">
                             <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
@@ -122,47 +96,49 @@
             </table>
         </div>
 
-        <div class=" flex flex-col w-full p-8 max-w-screen-xl justify-start items-start text-left  mx-auto">
+        <div class=" flex flex-col w-full p-8 justify-start items-start text-left  mx-auto">
             <h1 class=" text-xl font-bold self-start">New Courses for you</h1>
 
-            <div class=" flex flex-row flex-wrap justify-start mt-8 gap-2 w-full" >
+            <div class=" flex flex-row flex-wrap justify-start mt-8 gap-10 w-full" >
             
-                <div class="rounded-3xl flex flex-col max-w-[400px] gap-6 border-[3px] bg-white border-bna_green relative">
+                <div v-if="loading_courses">Loading courses...</div>
+                <div v-if="!loading_courses && courses" v-for="(course, index) in courses" :key="index" class="rounded-3xl flex flex-col max-w-[400px] gap-6 border-[3px] bg-white border-bna_green relative">
                     <div class="floating_brain absolute h-20 w-20 rounded-full bg-white border-[3px] border-bna_green -right-5 -top-10 flex justify-center items-center">
                         <svg class="w-[60px] h-[60px] text-bna_green dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.5A2.493 2.493 0 0 1 7.51 20H7.5a2.468 2.468 0 0 1-2.4-3.154 2.98 2.98 0 0 1-.85-5.274 2.468 2.468 0 0 1 .92-3.182 2.477 2.477 0 0 1 1.876-3.344 2.5 2.5 0 0 1 3.41-1.856A2.5 2.5 0 0 1 12 5.5m0 13v-13m0 13a2.493 2.493 0 0 0 4.49 1.5h.01a2.468 2.468 0 0 0 2.403-3.154 2.98 2.98 0 0 0 .847-5.274 2.468 2.468 0 0 0-.921-3.182 2.477 2.477 0 0 0-1.875-3.344A2.5 2.5 0 0 0 14.5 3 2.5 2.5 0 0 0 12 5.5m-8 5a2.5 2.5 0 0 1 3.48-2.3m-.28 8.551a3 3 0 0 1-2.953-5.185M20 10.5a2.5 2.5 0 0 0-3.481-2.3m.28 8.551a3 3 0 0 0 2.954-5.185"/>
                         </svg>
                     </div>
-                    <!-- <div></div> -->
-                    <img src="../assets/images/bna_square.jpg" class=" rounded-t-3xl">
-                    <div class="flex flex-col gap-8 p-5">
-                        <h3 class="font-bold text-bna_green text-xl">AWS Machine Learning Engineer</h3>
-                        <p>Learn to master AWS machine learning services to create scalable, efficient AI solutions on Amazon Web services.</p>
-                        <div class="flex flex-col gap-3">
-                            <span>10 Weeks (Midweek or Weekend)</span>
-                            <span>5 Use Case Projects for portfolio</span>
-                            <span>Avg Salary $85,000 - $250,000 Yearly</span>
-                            <span>More than 150,000 Open Jobs</span>
-                            <span>Certificate of Completion</span>
-                            <span>12 Modules</span>
-                            <span>100% Online</span>
-                            <span>Classes starting on 19 January</span>
+                    <img :src="course.image" class=" rounded-t-3xl h-[200px]">
+
+                    <div class="flex flex-col h-full justify-between">
+                        <div class="flex flex-col gap-8 p-5">
+                            <h3 class="font-bold text-bna_green text-xl">{{ course.title }}</h3>
+                            <p>{{ course.description }}</p>
+                            <div class="flex flex-col gap-3">
+                                <span>10 Weeks (Midweek or Weekend)</span>
+                                <span>5 Use Case Projects for portfolio</span>
+                                <span>Avg Salary $85,000 - $250,000 Yearly</span>
+                                <span>More than 150,000 Open Jobs</span>
+                                <span>Certificate of Completion</span>
+                                <span>{{ course.modules }} modules</span>
+                                <span>100% Online</span>
+                                <span>Classes starting on 19 January</span>
+                                
+                            </div>
                             
                         </div>
-                        <div class="w-full flex flex-row justify-between">
-                            <RouterLink to="/bn/checkout">
+                        <div class="w-full flex flex-row justify-between justify-self-end p-5">
+                            <RouterLink :to="'/bn/checkout/' + course.title">
                                 <button class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_green text-white">ENROLL TODAY</button>
                             </RouterLink>
                             
 
-                            <RouterLink to="/bn/course/aws/detail">
+                            <RouterLink :to="'/bn/course/' + course.title">
                                 <button class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_blue text-white">VIEW PROGRAM</button>
                             </RouterLink>
                         </div>
                     </div>
                 </div>
-
-
 
             </div>
 
@@ -182,6 +158,10 @@ export default {
         return{
             user: '',
             user_joined: '',
+
+            loading_courses: false,
+            courses: [],
+
         }
     },
     methods: {
@@ -201,9 +181,19 @@ export default {
             }
         },
 
-        logout(){
-            localStorage.removeItem('life-gaurd');
-            this.$router.push('/login')
+        async getCourses(){
+            this.loading_courses = true;
+
+            try{
+                const response = await axios.get(`${this.api_url}/courses`);
+                console.log("courses: ", response.data)
+                this.courses = response.data;
+                this.loading_courses = false;
+
+            }catch(error){
+                alert(error.response.data.message);
+                this.loading_courses = false;
+            }
         },
 
         formatDateType(timestamp){
@@ -219,6 +209,7 @@ export default {
     },
     mounted(){
         this.getUser();
+        this.getCourses();
     }
     
 }

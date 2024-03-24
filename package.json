@@ -7,15 +7,20 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^3.0.10",
+    "@vue-stripe/vue-stripe": "^4.5.0",
     "axios": "^1.6.7",
     "bootstrap-icons": "^1.11.3",
     "flowbite": "^2.3.0",
     "linkedin-auth": "^0.0.4",
     "register-service-worker": "^1.7.2",
+    "stripe": "^14.22.0",
     "vue": "^3.2.13",
     "vue-facebook-login-component-next": "^1.0.4",
     "vue-google-oauth2": "^1.5.10",
+    "vue-paypal-checkout": "^3.2.0",
     "vue-router": "^4.0.3",
+    "vue-stripe-js": "^1.0.2",
     "vue3-google-login": "^2.0.25",
     "vue3-linkedin-login": "^0.1.8",
     "vuex": "^4.0.0"

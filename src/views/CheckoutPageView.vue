@@ -1,4 +1,8 @@
 <template>
+
+
+
+
 <div class="h-screen">
     <div class=" flex flex-col justify-center items-center w-full mt-10">
         <section class=" flex flex-col w-[300px] relative h-6 items-center">
@@ -40,39 +44,37 @@
 
         </section>
 
-<!-- {{ user }} -->
-
         <section class=" w-full flex flex-col md:ps-8 mt-20">
             <div class="flex flex-col md:flex-row gap-3 p-3">
-                <div class=" w-full md:w-[60%] mt-3">
+                <div class=" w-full md:w-[60%]">
                     
                     <button @click="$router.go(-1)" class=" self-start font-bold text-bna_blue"> 
                         <span><i class="bi bi-chevron-left"></i> Go back</span>
                     </button>
 
-                    <form class="mt-3">
+                    <form @submit.prevent="payWithStripe"class="mt-3">
                         <div v-if="tab == 0">
                             <h1 class="font-bold text-2xl">1- Account Details</h1>
                             <div class="mt-3 rounded-xl bg-white flex flex-col gap-8 p-10">
                                 <div class="flex flex-row gap-10 flex-wrap">
                                     <label class=" flex flex-col grow">
                                         <span>FIRST NAME*</span>
-                                        <input type="name" placeholder="Firstname" name="firstname" class="form_input" v-model="user.firstname" :disabled="user">
+                                        <input type="name" placeholder="Firstname" name="firstname" class="form_input" v-model="user.firstname">
                                     </label>
                                     <label class=" flex flex-col grow">
                                         <span>LAST NAME*</span>
-                                        <input type="name" placeholder="Lastname" name="firstname" class="form_input" v-model="user.lastname" :disabled="user">
+                                        <input type="name" placeholder="Lastname" name="firstname" class="form_input" v-model="user.lastname">
                                     </label>
                                 </div>
 
                                 <div class="flex flex-row gap-10 flex-wrap">
                                     <label class=" flex flex-col grow">
                                         <span>EMAIL*</span>
-                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email" class="form_input" v-model="user.email" :disabled="user">
+                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email" class="form_input" v-model="user.email" >
                                     </label>
                                     <label class=" flex flex-col grow">
                                         <span>CONFIRM EMAIL*</span>
-                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email_confirmation" class="form_input" v-model="user.email" :disabled="user">
+                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email_confirmation" class="form_input" v-model="user.email">
                                     </label>
                                 </div>
 
@@ -84,49 +86,70 @@
                                 </div>
 
                                 <div class="py-5 flex flex-row justify-end gap-6">
-                                    <button class="form_btn bg-bna_green">CANCEL</button>
-                                    <button class="form_btn bg-bna_blue" @click="tab += 1" :disabled="!accept_TOS">CONTINUE</button>
+                                    <button type="button" class="form_btn bg-bna_green">CANCEL</button>
+                                    <button type="button" class="form_btn bg-bna_blue" @click="tab += 1" :disabled="!accept_TOS">CONTINUE</button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mt-5" v-if="tab == 1">
+                        <div class="" v-if="tab == 1">
                             <h1 class="font-bold text-2xl">2- Review</h1>
                             <div class="mt-3 rounded-xl bg-white  flex flex-col gap-8 p-10">
                                 <h2 class="font-bold text-xl">Your Order</h2>
                                 <div class="bg-gray-100 rounded-3xl p-6 flex flex-col gap-3">
-                                    <div class="font-bold text-lg flex flex-row justify-between" v-for="course in courses">
+                                    <div v-if="courses" class="font-bold text-lg flex flex-row justify-between" v-for="course in courses">
                                         <p class="w-[70%]">{{ course.title}}</p>
-                                        <span>$ {{ course.amount }}</span>
+                                        <span>$ {{ course.price }}</span>
+                                    </div>
+                                    <div v-if="course" class="font-bold text-lg flex flex-row justify-between">
+                                        <p class="w-[70%]">{{ course.title}}</p>
+                                        <span>$ {{ course.price }}</span>
                                     </div>
                                     <div class="font-bold text-lg flex flex-row justify-between text-bna_blue">
                                         <p>Total</p>
-                                        <span>$ 289.0</span>
+                                        <span>$ {{ course.price }}.00</span>
                                     </div>
                                 </div>
                                 <div class="py-5 flex flex-row justify-end gap-6">
-                                    <button class="form_btn bg-bna_green" @click="tab -= 1">GO BACK</button>
-                                    <button class=" self-end form_btn bg-bna_blue" @click="tab += 1">PURCHASE</button>
+                                    <button type="button" class="form_btn bg-bna_green" @click="tab -= 1">GO BACK</button>
+                                    <button type="button" class=" self-end form_btn bg-bna_blue" @click="tab += 1">PURCHASE</button>
                                 </div>
                                 
                             </div>
                         </div>
 
-                        <div class="mt-5" v-if="tab == 2">
+                        <div class="" v-if="tab == 2">
                             <h1 class="font-bold text-2xl">3- Payment</h1>
                             <div class="mt-3 rounded-xl bg-white flex flex-col gap-3 p-10">
+
+                                <!-- IMPORT STRIPE COMPONENT HERE -->
                                 <div class="flex flex-col gap-2 justify-start items-start">
                                     <h2 class="font-bold text-xl">Pay with Stripe</h2>
-                                    <button class=" bg-[#2C2C5E] text-white p-5 font-bold rounded-md">Checkout with Stripe</button>
+                                    <button :disabled="stripe_loading" type="button" @click="payWithStripe" class=" bg-[#2C2C5E] text-white p-5 font-bold rounded-md w-full hover:bg-black">
+                                        
+                                        <span v-if="stripe_loading" class="flex flex-row gap-3 justify-center items-center">
+                                            <div role="status">
+                                                <svg aria-hidden="true" class="inline w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                                </svg>
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                            <span>Loading Stripe Payment</span>
+                                        </span>
+                                        <span v-else>Checkout with Stripe <i class="bi bi-stripe"></i></span>
+                                    </button>
                                 </div>
                                
                                 <div class="flex flex-col gap-2 justify-start items-start mt-6">
                                     <h2 class="font-bold text-xl">Pay with Paypal</h2>
-                                    <button class=" bg-yellow-400 text-white p-5 font-bold rounded-md">Checkout with Paypal</button>
+                                    <button type="button" class=" bg-yellow-300 text-blue-900 p-5 font-bold rounded-md w-full hover:bg-yellow-400 hover:text-white">
+                                        Checkout with Paypal <i class="bi bi-paypal"></i></button>
                                 </div>
 
+
                                 <div class="py-5 flex flex-row justify-end gap-6">
-                                    <button class="form_btn bg-bna_green" @click="tab -= 1">GO BACK</button>
+                                    <button type="button" class="form_btn bg-bna_green" @click="tab -= 1">GO BACK</button>
                                 </div>
                             </div>
                         </div>
@@ -145,25 +168,35 @@
                                 <span>Course</span>
                                 <span>Price</span>
                             </div>
-                            <div class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md" v-for="(course, index) in courses" :key="index">
+
+                            <div v-if="courses" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md" v-for="(course, index) in courses" :key="index">
                                 
                                 <div class="flex flex-row items-center gap-3 max-w-[70%]">
                                     <button @click="removeCourse(index)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
                                     <span>{{ course.title }} {{ index }}</span>
                                 </div>
-                                <span>$ {{ course.amount }}</span>
+                                <span>$ {{ course.price }}</span>
                             </div>
+                            <div v-if="course" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md">
+                                
+                                <div class="flex flex-row items-center gap-3 max-w-[70%]">
+                                    <button @click="removeCourse(index)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
+                                    <span>{{ course.title }}</span>
+                                </div>
+                                <span>$ {{ course.price }}</span>
+                            </div>
+
                             <div class="border-b"></div>
                             <div class="w-full flex flex-row font-bold justify-between">
                                 <span>Subtotal</span>
-                                <span>$299.99</span>
+                                <span>${{ course.price }}</span>
                             </div>
                             <div class="w-full flex flex-row font-bold justify-between">
                                 <span>Estimated Tax</span>
                                 <span>$0</span>
                             </div>
                             <div>
-                                <p>* Bright Next Academy is required by law to collect transaction taxes such as sales tax, VAT, GST or other similar taxes on purchases in some jurisdictions. The actual tax amount will be calculated based on the applicable jurisdictional tax rates when your order is processed.</p>
+                                <p>* Bright Next Academy is required by law to collect transaction taxes such as sales tax, VAT, GST or other similar taxes on purchases in some jurisdictions. The actual tax price will be calculated based on the applicable jurisdictional tax rates when your order is processed.</p>
                             </div>
                             <div>
                                 <p>*Excluding transaction taxes such as sales tax, VAT, GST and other similar taxes</p>
@@ -179,34 +212,61 @@
 
 <script>
 import axios from 'axios';
+import PayPal from 'vue-paypal-checkout'
+import stripeService from '@/services/stripeService'
+import ThankyouPageView from './ThankyouPageView.vue';
 
 
     export default {
         name: "CheckoutPageView",
+        components: { PayPal, ThankyouPageView },
         data(){
             return{
-                user: '',
-                tab: 0,
-                courses: [
-                    {id: 0, title: "Basic Knowledge of AI and Machine Learning", amount: 150},
-                    {id: 1, title: "Advanced AI and Machine Learning", amount: 149}
-                ],
+                user: {
+                    firstname: '',
+                    lastname: '',
+                    email: '',
+                },
+                tab: 2,
+                courses: [],
+                course: {
+                    title: '',
+                    price: ''
+                },
+
+                page_loading: false,
+
+                stripe_loading: false,
+
                 accept_TOS: false,
+                thankyou_modal: false,
+
             }
         },
 
         methods:{
             removeCourse(index) {
-                // if(this.courses.length >= 1 && index != 0){
                     this.courses.splice(index, 1);
                     if(this.courses.length <= 0){
                         // do not allow check out course be zero
                         window.location.reload()
                     }
-                // }
+            },
+
+            async getCourseDetails(){
+                try{
+                    const response = await axios.get(`${this.api_url}/courses/${this.$route.params.course_title}`);
+                    console.log(response.data);
+                    this.course = response.data;
+                    // this.page_loading = false;
+                }catch(error){
+                    console.log(error.response.data);
+                    // this.page_loading = false;
+                }
             },
 
             async getUser(){
+                // this.loading = true;
                 const headers = {
                     Authorization : `JWT ${localStorage.getItem('BNA')}`,
                 }
@@ -214,18 +274,47 @@ import axios from 'axios';
                 try{
                     const res = await axios.get(`${this.api_url}/get-user`, { headers });
                     this.user = res.data.user;
-                    this.user_joined = res.data.user.createdAt;
+                    // this.loading = false;
                     // console.log(res);
                 }
                 catch(error){
-                    alert(error)
+                    console.log("error getting user")
+                    // this.loading = false;
                 }
             },
+
+            async payWithStripe() {
+                this.stripe_loading = true;
+
+                const PRODUCT_FROM_CLIENT = {
+                    name: this.course.title,
+                    amount: this.course.price
+                };
+                console.log("testing: ", PRODUCT_FROM_CLIENT)
+
+                try {
+                    const response = await axios.post(`${this.api_url}/payment/stripe`, PRODUCT_FROM_CLIENT);
+                    console.log(response.data);
+                    this.stripe_loading = false;
+                    
+                    // send the user to the stripe checkout page...
+                    window.location.href = response.data.session_url;
+
+                    // Redirect to the checkout page or handle the session response as needed
+                } catch (error) {
+                    console.error(error);
+                    this.stripe_loading = false;
+                }
+            },
+
         },
 
         mounted(){
             this.getUser();
-        }
+            this.getCourseDetails();
+        },
+
+    
     }
 </script>
 
