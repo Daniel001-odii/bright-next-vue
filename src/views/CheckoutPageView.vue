@@ -213,7 +213,6 @@
 <script>
 import axios from 'axios';
 import PayPal from 'vue-paypal-checkout'
-import stripeService from '@/services/stripeService'
 import ThankyouPageView from './ThankyouPageView.vue';
 
 
@@ -286,17 +285,18 @@ import ThankyouPageView from './ThankyouPageView.vue';
             async payWithStripe() {
                 this.stripe_loading = true;
 
-                const PRODUCT_FROM_CLIENT = {
+                const checkout = {
                     name: this.course.title,
-                    amount: this.course.price
+                    amount: this.course.price,
+                    courses: [this.course._id],
                 };
-                console.log("testing: ", PRODUCT_FROM_CLIENT)
+                console.log("testing: ", checkout)
 
                 try {
-                    const response = await axios.post(`${this.api_url}/payment/stripe`, PRODUCT_FROM_CLIENT);
+                    const response = await axios.post(`${this.api_url}/payment/stripe`, checkout);
                     console.log(response.data);
                     this.stripe_loading = false;
-                    
+
                     // send the user to the stripe checkout page...
                     window.location.href = response.data.session_url;
 
