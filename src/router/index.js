@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginViewVue from '@/views/LoginView.vue'
-import UserProfileViewVue from '@/views/UserProfileView.vue'
+import UserProfileViewVue from '@/views/UserDashBoardViewPage.vue'
 import testAuthViewVue from '@/views/testAuth.vue'
 import CheckoutPageView from '@/views/CheckoutPageView.vue'
 import CourseDetailPage from '@/views/CourseDetailPage.vue'
@@ -11,6 +11,9 @@ import CartPageView from '@/views/CartPageView.vue'
 import ThankyouPageView from '@/views/ThankyouPageView.vue'
 import SetpasswordPageView from '@/views/SetpasswordPageView.vue'
 import PassResetPageView from '@/views/PassResetPageView.vue'
+import PublicCourseDetailPage from '@/views/PublicCourseDetailPage.vue'
+import PublicCheckoutPageView from '@/views/PublicCheckoutPageView.vue'
+import PublicThankyouPageView from '@/views/PublicThankyouPageView.vue'
 
 const routes = [
 
@@ -32,13 +35,13 @@ const routes = [
     // meta: { requiresAuth: true, role: 'user' },
   },
 
-  { path: '/course/:course_name/detail', name: 'course-detail', component: CourseDetailPage },
+  { path: '/course/:course_title', name: 'course-detail', component: PublicCourseDetailPage },
 
-  { path: '/checkout', name: 'checkout-public', component: CheckoutPageView },
+  { path: '/checkout/:course_title', name: 'checkout-public', component: PublicCheckoutPageView },
 
-  { path: '/thankyou', name: 'thank you', component: ThankyouPageView },
+  { path: '/thankyou', name: 'thank you', component: PublicThankyouPageView },
 
-  { path: '/password', name: 'password', component: SetpasswordPageView },
+  { path: '/user/:reset_token/password', name: 'password', component: SetpasswordPageView },
 
   { path: '/password/reset', name: 'password-reset', component: PassResetPageView },
 

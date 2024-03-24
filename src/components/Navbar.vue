@@ -87,16 +87,19 @@ export default {
                 const res = await axios.get(`${this.api_url}/get-user`, { headers });
                 this.user = res.data.user;
                 this.user_joined = res.data.user.createdAt;
-                // console.log(res);
             }
             catch(error){
-                alert(error)
+                if(error.response.status == 401){
+                    alert("Your previous session expired please Login again.")
+                };
+                localStorage.removeItem("BNA");
+                this.$router.push("/login")
             }
         },
 
         logout(){
             localStorage.removeItem('BNA');
-            this.$router.push('/login')
+            this.$router.push('/login');
         },
 
         formatDateType(timestamp){
