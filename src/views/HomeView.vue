@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row p-5 justify-between items-center bg-slate-200 text-white">
+  <div class="flex flex-row p-3 justify-between items-center bg-bna_green_dark text-white">
     <img src="../assets/bright-next-logo.png" class="w-[200px]">
     <RouterLink to="/login">
       <button class=" bg-bna_green p-3 rounded-md text-white font-bold">Login</button>

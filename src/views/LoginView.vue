@@ -52,9 +52,9 @@
                         </v-facebook-login>
                     </div>
 
-                    <div class="mt-5">
+                    <!-- <div class="mt-5">
                         <button class="flex justify-center p-3 border border-slate-300 rounded-3xl shadow-sm bg-white text-slate-500 hover:!bg-slate-50 cursor-pointer w-full">Continue with microsoft</button>
-                    </div>
+                    </div> -->
                 </div>
                 <div v-if="currentTab == 'register'">
                     <form @submit.prevent="register">
