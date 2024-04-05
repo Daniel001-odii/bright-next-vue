@@ -1,9 +1,46 @@
 <template>
-  <div class="flex flex-row p-3 justify-between items-center bg-bna_green_dark text-white">
+  <div class="flex flex-row p-3 justify-between items-center bg-slate-50 text-white">
     <img src="../assets/bright-next-logo.png" class="w-[200px]">
-    <RouterLink to="/login">
-      <button class=" bg-bna_green p-3 rounded-md text-white font-bold">Login</button>
-    </RouterLink>
+
+    <div class="flex flex-row gap-5 text-blue-600 font-bold justify-evenly">
+        <div>Faculty</div>
+        <div>Be Certified Ready</div>
+        <div>Individual</div>
+        <div>Enterprise</div>
+        <RouterLink to="/login">
+            <div>Login</div>
+        </RouterLink>
+    </div>
+
+    <div class="flex flex-row gap-3 justify-evenly">
+        <div class="relative">
+            <button @click="cart_menu = !cart_menu" class=" bg-bna_green p-3 rounded-xl text-white font-bold h-10 w-10 text-2xl relative flex justify-center place-items-center">
+                <i class="bi bi-cart"></i>
+                <div class="bg-red-500 h-3 w-3 absolute rounded-full -top-1 -right-1"></div>
+            </button>
+            <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
+                <div class="flex flex-col">
+                    <div class="font-bold flex flex-row justify-between text-black">
+                        <span>Course</span>
+                        <span>Price</span>
+                    </div>
+                    <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-3" v-for="course in 3">
+                        <div class="flex flex-row gap-3">
+                            <button><i class="bi bi-x-lg"></i></button>
+                            <span class="w-[70%]">Basic Knowledge of AI and Machine Learning</span>
+                        </div>
+                        <div>$149.99</div>
+                    </div>
+                </div>
+                <div class="w-full border-t-gray-200 border-t-2"></div>
+                <button class="bg-bna_green w-fit text-white p-5 rounded-full shadow-blue-400 shadow-lg">PROCEED TO CHECKOUT</button> 
+            </div>
+        </div>
+
+
+      <button class=" bg-orange-400 p-3 rounded-xl text-white font-bold">Get Started</button>
+      <button class=" bg-blue-800 p-3 rounded-xl text-white font-bold">Book a Demo</button>
+    </div>
   </div>
 
 
@@ -64,6 +101,8 @@ export default {
         return{
             courses:'',
             loading_courses: false,
+
+            cart_menu: false,
         }
     },
 

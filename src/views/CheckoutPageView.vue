@@ -86,7 +86,7 @@
                                 </div>
 
                                 <div class="py-5 flex flex-row justify-end gap-6">
-                                    <button type="button" class="form_btn bg-bna_green">CANCEL</button>
+                                    <button type="button" class="form_btn bg-bna_green" @click="$router.go(-1)">CANCEL</button>
                                     <button type="button" class="form_btn bg-bna_blue" @click="tab += 1" :disabled="!accept_TOS">CONTINUE</button>
                                 </div>
                             </div>
@@ -97,17 +97,17 @@
                             <div class="mt-3 rounded-xl bg-white  flex flex-col gap-8 p-10">
                                 <h2 class="font-bold text-xl">Your Order</h2>
                                 <div class="bg-gray-100 rounded-3xl p-6 flex flex-col gap-3">
-                                    <div v-if="courses" class="font-bold text-lg flex flex-row justify-between" v-for="course in courses">
+                                    <div v-if="cart" class="font-bold text-lg flex flex-row justify-between" v-for="course in cart">
                                         <p class="w-[70%]">{{ course.title}}</p>
                                         <span>$ {{ course.price }}</span>
                                     </div>
-                                    <div v-if="course" class="font-bold text-lg flex flex-row justify-between">
+                                    <!-- <div v-if="course" class="font-bold text-lg flex flex-row justify-between">
                                         <p class="w-[70%]">{{ course.title}}</p>
                                         <span>$ {{ course.price }}</span>
-                                    </div>
+                                    </div> -->
                                     <div class="font-bold text-lg flex flex-row justify-between text-bna_blue">
                                         <p>Total</p>
-                                        <span>$ {{ course.price }}.00</span>
+                                        <span>$ {{ total_price.toLocaleString() }}.00</span>
                                     </div>
                                 </div>
                                 <div class="py-5 flex flex-row justify-end gap-6">
@@ -169,27 +169,27 @@
                                 <span>Price</span>
                             </div>
 
-                            <div v-if="courses" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md" v-for="(course, index) in courses" :key="index">
+                            <div v-if="cart" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md" v-for="(course, index) in cart" :key="index">
                                 
                                 <div class="flex flex-row items-center gap-3 max-w-[70%]">
-                                    <button @click="removeCourse(index)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
-                                    <span>{{ course.title }} {{ index }}</span>
+                                    <button v-if="cart.length > 1" @click="removeCourse(course._id)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
+                                    <span>{{ course.title }}</span>
                                 </div>
                                 <span>$ {{ course.price }}</span>
                             </div>
-                            <div v-if="course" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md">
+                            <!-- <div v-if="course" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md">
                                 
                                 <div class="flex flex-row items-center gap-3 max-w-[70%]">
                                     <button @click="removeCourse(index)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
                                     <span>{{ course.title }}</span>
                                 </div>
                                 <span>$ {{ course.price }}</span>
-                            </div>
+                            </div> -->
 
                             <div class="border-b"></div>
                             <div class="w-full flex flex-row font-bold justify-between">
                                 <span>Subtotal</span>
-                                <span>${{ course.price }}</span>
+                                <span>${{ total_price.toLocaleString() }}</span>
                             </div>
                             <div class="w-full flex flex-row font-bold justify-between">
                                 <span>Estimated Tax</span>
@@ -242,18 +242,32 @@ import ThankyouPageView from './ThankyouPageView.vue';
 
                 headers: {
                     Authorization: `JWT ${localStorage.getItem('BNA')}`
-                }
+                },
+
+                cart: [],
+                total_price: 0,
 
             }
         },
 
         methods:{
-            removeCourse(index) {
+            removeCourseOld(index) {
                     this.courses.splice(index, 1);
                     if(this.courses.length <= 0){
                         // do not allow check out course be zero
                         window.location.reload()
                     }
+            },
+
+            async removeCourse(course_id){
+                const headers = this.headers;
+                try{
+                    const response = await axios.post(`${this.api_url}/cart/courses/${course_id}/remove`, {}, { headers });
+                    console.log(response.data.message);
+                    this.getUserCart();
+                }catch(error){
+                    console.log("error removing course from cart: ", error);
+                }
             },
 
             async getCourseDetails(){
@@ -312,11 +326,34 @@ import ThankyouPageView from './ThankyouPageView.vue';
                 }
             },
 
+
+            async getUserCart() {
+                const headers = this.headers;
+
+                try{
+                    const response = await axios.get(`${this.api_url}/cart`, { headers });
+                    // console.log("user's cart: ", response);
+                    this.cart = response.data.cart.courses;
+                    this.total_price = 0;
+                    this.cart.forEach(course => {
+                        // Convert the price to a number and add it to the total price
+                        this.total_price += parseFloat(course.price);
+                    });
+                }catch(error){
+                    console.log("error getting user cart: ", error)
+                }
+            }
         },
 
         mounted(){
             this.getUser();
-            this.getCourseDetails();
+            // this.getCourseDetails();
+            this.getUserCart();
+
+            // cart cannot be empty and user is allowed to checkout...
+            // if(this.$route.name == "checkout" && !this.cart.course){
+            //     this.$router.push("/bn/dashboard");
+            // }
         },
 
     

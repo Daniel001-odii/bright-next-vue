@@ -128,9 +128,9 @@
                             
                         </div>
                         <div class="w-full flex flex-row justify-between justify-self-end p-5">
-                            <RouterLink :to="'/bn/checkout/' + course.title">
-                                <button class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_green text-white">ENROLL TODAY</button>
-                            </RouterLink>
+                            <!-- <RouterLink :to="'/bn/checkout/' + course.title"> -->
+                                <button @click="enrollCourseTemp(course._id, course.title)" class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_green text-white">ENROLL TODAY</button>
+                            <!-- </RouterLink> -->
                             
 
                             <RouterLink :to="'/bn/course/' + course.title">
@@ -200,6 +200,21 @@ export default {
             const date = new Date(timestamp);
             const options = { year: "numeric", month: "long", day: "numeric" };
             return date.toLocaleDateString(undefined, options);
+        },
+
+        // add course to users cart temporarily...
+        async enrollCourseTemp(course_id, course_title){
+            const headers = {
+                Authorization : `JWT ${localStorage.getItem('BNA')}`,
+            };
+
+            try{
+                const response = await axios.post(`${this.api_url}/courses/${course_id}/enroll`, {}, { headers });
+                console.log("course enrolled...", response);
+                this.$router.push(`/bn/checkout`);
+            }catch(error){
+                console.log("error enrolling course...");
+            }
         }
     },
     computed: {

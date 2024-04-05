@@ -22,14 +22,9 @@
             <div class="flex flex-row gap-8 mt-3">
                 <button class="bna_btn bg-bna_green"><i class="bi bi-plus-lg"></i> ADD TO CART</button>
 
-                <RouterLink v-if="user" :to="'/bn/checkout/' + course.title">
-                    <button class="bna_btn bg-bna_blue">ENROLL TODAY</button>
-                </RouterLink>
-
-                <RouterLink v-else to="/checkout">
-                    <button class="bna_btn bg-bna_blue">ENROLL TODAY</button>
-                </RouterLink>
-               
+                <!-- <RouterLink :to="'/bn/checkout/' + course.title"> -->
+                    <button @click="enrollCourseTemp(course._id, course)" class="bna_btn bg-bna_blue">ENROLL TODAY</button>
+                <!-- </RouterLink> -->
             </div>
         </div>
     </div>
@@ -78,7 +73,23 @@ import axios from 'axios';
                     console.log(error.response.data);
                     this.loading = false;
                 }
+            },
+
+            async enrollCourseTemp(course_id, course_title){
+                const headers = {
+                    Authorization : `JWT ${localStorage.getItem('BNA')}`,
+                };
+
+                try{
+                    const response = await axios.post(`${this.api_url}/courses/${course_id}/enroll`, {}, { headers });
+                    console.log("course enrolled...", response);
+                    this.$router.push(`/bn/checkout/${course_title}`);
+                }catch(error){
+                    console.log("error enrolling course...");
+                }
             }
+
+            
         },
 
         mounted(){

@@ -43,7 +43,7 @@
             <ul class="flex flex-col md:items-center font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
 
             <li>
-                <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Programs</a>
+                <RouterLink to="/bn/dashboard" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">My Programs</RouterLink>
             </li>
             <li>
                 <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Faculty</a>
@@ -51,12 +51,38 @@
             <li>
                 <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Individuals</a>
             </li>
-            <li class="relative">
-                <button type="button" class="inline-flex items-center px-4 py-1.5 text-sm font-medium text-center text-white bg-bna_green_dark rounded-lg hover:bg-black">
-                    Cart
-                    <span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-black bg-white rounded-full">1</span>
-                </button>
-            </li>
+            <div class="relative">
+            <button @click="toggleCartMenu" class=" bg-bna_green p-3 rounded-xl text-white font-bold h-10 w-10 text-2xl relative flex justify-center place-items-center">
+                <i class="bi bi-cart"></i>
+                <div class="bg-red-500 h-3 w-3 absolute rounded-full -top-1 -right-1"></div>
+            </button>
+            <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
+                <div class="flex flex-col">
+                    <div v-if="cart.length > 0">
+                        <div class="font-bold flex flex-row justify-between text-black">
+                            <span>Course</span>
+                            <span>Price</span>
+                        </div>
+                        <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-2" v-for="course in cart">
+                            <div class="flex flex-row gap-3">
+                                <button @click="removeCourse(course._id)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
+                                <span class="w-[70%]">{{ course.title }}</span>
+                            </div>
+                            <div>${{ course.price }}</div>
+                        </div>
+                    </div>
+                    <div v-else class="text-center text-gray-400">
+                        <p class="text-bold text-2xl">Your cart is empty!</p>
+                        <small>Start by enrolling for courses...</small>
+                    </div>
+                </div>
+                <div v-if="cart.length > 0" class="w-full border-t-gray-200 border-t-2"></div>
+                <RouterLink to="/bn/checkout">
+                    <button v-if="cart.length > 0" class="bg-bna_green w-fit text-white p-3 rounded-full shadow-blue-400 shadow-lg">PROCEED TO CHECKOUT</button> 
+                </RouterLink>
+            </div>
+        </div>
+
             </ul>
         </div>
         </div>
@@ -75,6 +101,14 @@ export default {
         return{
             user: '',
             user_joined: '',
+
+            cart_menu: false,
+            headers: {
+                Authorization : `JWT ${localStorage.getItem('BNA')}`,
+            },
+
+            cart: [],
+            total_price: 0,
         }
     },
     methods: {
@@ -106,6 +140,42 @@ export default {
             const date = new Date(timestamp);
             const options = { year: "numeric", month: "long", day: "numeric" };
             return date.toLocaleDateString(undefined, options);
+        },
+
+
+        // CART...
+        async removeCourse(course_id){
+            const headers = this.headers;
+            try{
+                const response = await axios.post(`${this.api_url}/cart/courses/${course_id}/remove`, {}, { headers });
+                console.log(response.data.message);
+                this.getUserCart();
+                
+            }catch(error){
+                console.log("error removing course from cart: ", error);
+            }
+        },
+
+        toggleCartMenu(){
+            this.cart_menu = !this.cart_menu;
+            this.getUserCart()
+        }, 
+
+        async getUserCart() {
+            const headers = this.headers;
+
+            try{
+                const response = await axios.get(`${this.api_url}/cart`, { headers });
+                // console.log("user's cart: ", response);
+                this.cart = response.data.cart.courses;
+                this.total_price = 0;
+                this.cart.forEach(course => {
+                    // Convert the price to a number and add it to the total price
+                    this.total_price += parseFloat(course.price);
+                });
+            }catch(error){
+                console.log("error getting user cart: ", error)
+            }
         }
     },
     computed: {
