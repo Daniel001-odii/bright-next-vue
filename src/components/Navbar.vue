@@ -53,8 +53,10 @@
             </li>
             <div class="relative">
             <button @click="toggleCartMenu" class=" bg-bna_green p-3 rounded-xl text-white font-bold h-10 w-10 text-2xl relative flex justify-center place-items-center">
-                <i class="bi bi-cart"></i>
-                <div class="bg-red-500 h-3 w-3 absolute rounded-full -top-1 -right-1"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="49" height="44" viewBox="0 0 29 24" fill="none">
+                    <path d="M10.578 17.7312C8.64527 17.7312 7.60276 16.5716 7.30991 14.6623L5.59972 2.98373H2.39017C1.60536 2.98373 0.925965 2.31605 0.925965 1.50781C0.925965 0.699565 1.60536 0.0318857 2.39017 0.0318857H6.24397C7.71989 0.0318857 8.27043 0.640996 8.44614 1.83579L8.57499 2.76117H26.8132C27.8791 2.76117 28.4531 3.37028 28.4531 4.23709C28.4531 4.40108 28.4179 4.62364 28.3945 4.78763L27.6097 10.1408C27.3286 12.0852 26.2743 13.2332 24.3533 13.2332H10.0626L10.2383 14.4163C10.2969 14.838 10.5429 15.1191 10.9412 15.1191H24.1425C24.857 15.1191 25.4895 15.6345 25.4895 16.4193C25.4895 17.2158 24.857 17.7312 24.1425 17.7312H10.578ZM25.3255 5.37332H8.94983L9.6995 10.621H24.0253C24.4353 10.621 24.6461 10.3516 24.7164 9.92993L25.3255 5.37332ZM11.5737 23.8809C10.332 23.8809 9.31295 22.8735 9.31295 21.6085C9.31295 20.3551 10.332 19.3477 11.5737 19.3477C12.8388 19.3477 13.8461 20.3551 13.8461 21.6085C13.8461 22.8735 12.8388 23.8809 11.5737 23.8809ZM22.198 23.8809C20.9446 23.8809 19.9255 22.8735 19.9255 21.6085C19.9255 20.3551 20.9446 19.3477 22.198 19.3477C23.4513 19.3477 24.4587 20.3551 24.4587 21.6085C24.4587 22.8735 23.4513 23.8809 22.198 23.8809Z" fill="white"/>
+                </svg>
+                <div  v-if="cart.length > 0" class="bg-red-600 h-3 w-3 absolute rounded-full -top-1 right-1"></div>
             </button>
             <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
                 <div class="flex flex-col">
@@ -185,6 +187,7 @@ export default {
     },
     mounted(){
         this.getUser();
+        this.getUserCart();
     }
     
 }

@@ -15,10 +15,19 @@ import PublicCourseDetailPage from '@/views/PublicCourseDetailPage.vue'
 import PublicCheckoutPageView from '@/views/PublicCheckoutPageView.vue'
 import PublicThankyouPageView from '@/views/PublicThankyouPageView.vue'
 
+// USER BASED PAGES...
+import UserLayoutTemplate from '../views/User/LayoutTemplate.vue'
+import ProfileView from '@/views/User/ProfileView.vue'
+import SubscriptionView from '@/views/User/SubscriptionView.vue'
+import LanguageView from '@/views/User/LanguageView.vue'
+import LinkedAccountsView from '@/views/User/LinkedAccountsView.vue'
+import NotificationsView from '@/views/User/NotificationsView.vue'
+import PasswordView from '@/views/User/PasswordView.vue'
+
+
 const routes = [
 
   { path: '/', name: 'home', component: HomeView },
-
   { path: '/login', name: 'login', component: LoginViewVue },
 
   {
@@ -33,6 +42,20 @@ const routes = [
       { path: 'thankyou', name: 'thank-you', component: ThankyouPageView },
     ],
     // meta: { requiresAuth: true, role: 'user' },
+  },
+
+  // User based routing....
+  {
+    path: '/user',
+    component: UserLayoutTemplate,
+    children: [
+      { path: 'profile', name: 'profile', component: ProfileView},
+      { path: 'subscription', name: 'subscription', component: SubscriptionView},
+      { path: 'language', name: 'language', component: LanguageView},
+      { path: 'accounts/linked', name: 'linked', component: LinkedAccountsView},
+      { path: 'notifications', name: 'notifications', component: NotificationsView},
+      { path: 'security', name: 'security', component: PasswordView},
+    ]
   },
 
   { path: '/course/:course_title', name: 'course-detail', component: PublicCourseDetailPage },
