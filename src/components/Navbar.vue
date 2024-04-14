@@ -1,43 +1,26 @@
 <template>
     <div>
+        <!-- max-w-screen-2xl -->
         <nav class="bg-white border-gray-200 dark:bg-gray-900">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <div class=" flex flex-wrap items-center justify-between mx-auto p-4">
         <span href="https://flowbite.com/" class="flex items-center space-x-3 rtl:space-x-reverse">
             <img src="https://assets-global.website-files.com/654a036a4d837081164c18b1/65861275fa179165cf72f181_New-Logo%20(1).png" class="h-[60px]" alt="bright-next Logo" />
         </span>
         <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-            <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
-                <span class="sr-only">Open user menu</span>
-                <img  v-if="user.avatar_url" class="w-8 h-8 rounded-full" :src="user.avatar_url" alt="user photo">
-            </button>
-            <span class="font-bold pl-3">My Account</span>
-            <!-- Dropdown menu -->
-            <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
-                <div class="px-4 py-3">
-                <span class="block text-sm text-gray-900 dark:text-white">{{ user.firstname }} {{ user.lastname }} {{ user.username }} </span>
-                <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">{{ user.email }}</span>
-                </div>
-                <ul class="py-2" aria-labelledby="user-menu-button">
-                <li>
-                    <RouterLink to="/bn/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</RouterLink>
-                </li>
-                <li>
-                    <RouterLink to="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</RouterLink>
-                </li>
-                <li>
-                    <RouterLink to="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</RouterLink>
-                </li>
-                <li>
-                    <span @click="logout()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</span>
-                </li>
-                </ul>
-            </div>
-            <button data-collapse-toggle="navbar-user" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-user" aria-expanded="false">
+            <RouterLink to="/user/profile">
+                <button type="button" class="flex flex-row items-center p-3">
+                    <img  v-if="user.avatar_url" class="w-8 h-8 rounded-full" :src="user.avatar_url" alt="user photo">
+                    <span class="font-bold pl-3">My Account</span>
+                </button>
+            </RouterLink>
+           
+           
+            <!-- <button data-collapse-toggle="navbar-user" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-user" aria-expanded="false">
                 <span class="sr-only">Open main menu</span>
                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
                 </svg>
-            </button>
+            </button> -->
         </div>
         <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
             <ul class="flex flex-col md:items-center font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
@@ -56,7 +39,10 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="49" height="44" viewBox="0 0 29 24" fill="none">
                     <path d="M10.578 17.7312C8.64527 17.7312 7.60276 16.5716 7.30991 14.6623L5.59972 2.98373H2.39017C1.60536 2.98373 0.925965 2.31605 0.925965 1.50781C0.925965 0.699565 1.60536 0.0318857 2.39017 0.0318857H6.24397C7.71989 0.0318857 8.27043 0.640996 8.44614 1.83579L8.57499 2.76117H26.8132C27.8791 2.76117 28.4531 3.37028 28.4531 4.23709C28.4531 4.40108 28.4179 4.62364 28.3945 4.78763L27.6097 10.1408C27.3286 12.0852 26.2743 13.2332 24.3533 13.2332H10.0626L10.2383 14.4163C10.2969 14.838 10.5429 15.1191 10.9412 15.1191H24.1425C24.857 15.1191 25.4895 15.6345 25.4895 16.4193C25.4895 17.2158 24.857 17.7312 24.1425 17.7312H10.578ZM25.3255 5.37332H8.94983L9.6995 10.621H24.0253C24.4353 10.621 24.6461 10.3516 24.7164 9.92993L25.3255 5.37332ZM11.5737 23.8809C10.332 23.8809 9.31295 22.8735 9.31295 21.6085C9.31295 20.3551 10.332 19.3477 11.5737 19.3477C12.8388 19.3477 13.8461 20.3551 13.8461 21.6085C13.8461 22.8735 12.8388 23.8809 11.5737 23.8809ZM22.198 23.8809C20.9446 23.8809 19.9255 22.8735 19.9255 21.6085C19.9255 20.3551 20.9446 19.3477 22.198 19.3477C23.4513 19.3477 24.4587 20.3551 24.4587 21.6085C24.4587 22.8735 23.4513 23.8809 22.198 23.8809Z" fill="white"/>
                 </svg>
-                <div  v-if="cart.length > 0" class="bg-red-600 h-3 w-3 absolute rounded-full -top-1 right-1"></div>
+                <div  v-if="cart.length > 0" class="bg-red-600 px-2 absolute rounded-full text-sm -top-2 -right-2">
+                    <span v-if="cart.length < 9">{{ cart.length }}</span>
+                    <span v-else>9+</span>
+                </div>
             </button>
             <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
                 <div class="flex flex-col">

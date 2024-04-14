@@ -53,12 +53,12 @@
                     </div>
                 </RouterLink>
 
-                <RouterLink to="#">
-                    <div class="nav_item group hover:text-bna_blue" :class="{ 'active_page': is }">
+                <!-- <RouterLink to="#"> -->
+                    <div class="nav_item group hover:text-bna_blue">
                         <i class="bi bi-door-open nav_item_icon group-hover:bg-bna_blue" :class="{ 'active_icon': isLanguage }"></i>
                         <span class="link_name" :class="full_side_bar_content ? 'inline-block':'hidden'">Logout</span>
                     </div>
-                </RouterLink>
+                <!-- </RouterLink> -->
             </div>
 
         </div>

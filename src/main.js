@@ -12,6 +12,11 @@ import '../src/assets/css/main.css'
 // boostrap icons...
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
+// stripe...
+import { loadStripe } from '@stripe/stripe-js';
+export const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+
+
 const app = createApp(App);
 
 app.config.globalProperties.api_url = process.env.VUE_APP_API_URL;

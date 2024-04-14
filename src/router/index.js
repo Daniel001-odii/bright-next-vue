@@ -60,7 +60,7 @@ const routes = [
 
   { path: '/course/:course_title', name: 'course-detail', component: PublicCourseDetailPage },
 
-  { path: '/checkout/:course_title', name: 'checkout-public', component: PublicCheckoutPageView },
+  { path: '/checkout', name: 'checkout-public', component: PublicCheckoutPageView },
 
   { path: '/thankyou', name: 'thank you', component: PublicThankyouPageView },
 

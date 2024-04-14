@@ -1,12 +1,12 @@
 <template>
-  <div class="flex flex-row p-3 justify-between items-center bg-slate-50 text-white">
+  <nav class="flex flex-row p-3 justify-between items-center bg-slate-50 text-white">
     <img src="../assets/bright-next-logo.png" class="w-[200px]">
 
     <div class="flex flex-row gap-5 text-blue-600 font-bold justify-evenly">
-        <div>Faculty</div>
-        <div>Be Certified Ready</div>
-        <div>Individual</div>
-        <div>Enterprise</div>
+        <div class="hidden md:inline-block">Faculty</div>
+        <div class="hidden md:inline-block">Be Certified Ready</div>
+        <div class="hidden md:inline-block">Individual</div>
+        <div class="hidden md:inline-block">Enterprise</div>
         <RouterLink to="/login">
             <div>Login</div>
         </RouterLink>
@@ -16,7 +16,7 @@
         <div class="relative">
             <button @click="cart_menu = !cart_menu" class=" bg-bna_green p-3 rounded-xl text-white font-bold h-10 w-10 text-2xl relative flex justify-center place-items-center">
                 <i class="bi bi-cart"></i>
-                <div class="bg-red-500 h-3 w-3 absolute rounded-full -top-1 -right-1"></div>
+                <div v-if="user_cart.length > 0" class="bg-red-500 px-2 absolute rounded-full -top-2 -right-2 text-sm">{{ user_cart.length }}</div>
             </button>
             <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
                 <div class="flex flex-col">
@@ -24,24 +24,26 @@
                         <span>Course</span>
                         <span>Price</span>
                     </div>
-                    <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-3" v-for="course in 3">
+                    <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-3 justify-between" v-for="(course, index) in user_cart" :key="index">
                         <div class="flex flex-row gap-3">
-                            <button><i class="bi bi-x-lg"></i></button>
-                            <span class="w-[70%]">Basic Knowledge of AI and Machine Learning</span>
+                            <button @click="removeCourseFromTemporaryCartStorage(course._id)"><i class="bi bi-x-lg"></i></button>
+                            <span class="w-[70%]">{{ course.title }}</span>
                         </div>
-                        <div>$149.99</div>
+                        <div>{{ course.price }}</div>
                     </div>
                 </div>
                 <div class="w-full border-t-gray-200 border-t-2"></div>
-                <button class="bg-bna_green w-fit text-white p-5 rounded-full shadow-blue-400 shadow-lg">PROCEED TO CHECKOUT</button> 
+                <RouterLink to="/checkout">
+                    <button class="bg-bna_green w-fit text-white p-5 rounded-full shadow-blue-400 shadow-lg">PROCEED TO CHECKOUT</button> 
+                </RouterLink>
             </div>
         </div>
 
 
       <button class=" bg-orange-400 p-3 rounded-xl text-white font-bold">Get Started</button>
-      <button class=" bg-blue-800 p-3 rounded-xl text-white font-bold">Book a Demo</button>
+      <button class=" bg-blue-800 p-3 rounded-xl text-white font-bold hidden md:inline-block">Book a Demo</button>
     </div>
-  </div>
+  </nav>
 
 
   <div class="p-8">
@@ -74,9 +76,10 @@
                       
                   </div>
                   <div class="w-full flex flex-row justify-between justify-self-end p-5">
-                      <RouterLink :to="'/checkout/' + course.title">
+                      <!-- <RouterLink to="/checkout">
                           <button class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_green text-white">ENROLL TODAY</button>
-                      </RouterLink>
+                      </RouterLink> -->
+                      <button @click="addCourseToTemporaryStorage(course._id)" class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_green text-white">ENROLL TODAY</button>
                       
 
                       <RouterLink :to="'/course/' + course.title">
@@ -103,6 +106,8 @@ export default {
             loading_courses: false,
 
             cart_menu: false,
+
+            user_cart: '',
         }
     },
 
@@ -122,10 +127,64 @@ export default {
                 this.loading_courses = false;
             }
         },
+
+        // check if theres a cart item already exisiting in the localStorage...
+        // if not create a new one..
+        initializeTemporaryCartStorage(){
+            if(!localStorage.getItem('_BNA_cart')){
+                const store = localStorage.setItem('_BNA_cart', JSON.stringify([]));
+            }
+        },
+
+        addCourseToTemporaryStorage(course_id){
+            // get the cart object..
+            let temporaryCart = JSON.parse(localStorage.getItem('_BNA_cart'));
+
+            // check if the course is already existing so it doesnt get double added...
+            if(!temporaryCart.includes(course_id)){
+                temporaryCart.push(course_id);
+                localStorage.setItem('_BNA_cart', JSON.stringify(temporaryCart));
+            }
+           
+            // Go to the checkout page after a delay
+            window.setTimeout(() => {
+                this.$router.push('/checkout');
+            }, 1000);
+        },
+
+        removeCourseFromTemporaryCartStorage(course_id) {
+            // Get the cart object
+            let temporaryCart = JSON.parse(localStorage.getItem('_BNA_cart'));
+            
+            // Check if the course is already existing to prevent double addition
+            if (temporaryCart.includes(course_id)) {
+                // Filter out the course_id from the temporaryCart
+                temporaryCart = temporaryCart.filter(id => id !== course_id);
+                localStorage.setItem('_BNA_cart', JSON.stringify(temporaryCart));
+            };
+            this.getCoursesInCart();
+        },
+
+        async getCoursesInCart() {
+            const body = {
+                    coursesArray: JSON.parse(localStorage.getItem('_BNA_cart')),
+                };
+            console.log("courses currently in cart: ", body)
+            try {
+                const response = await axios.post(`${this.api_url}/courses/array`, body);
+                console.log("courses array: ", response);
+                this.user_cart = response.data;
+            } catch (error) {
+                console.debug("failed to get course list: ", error);
+            }
+        }
     },
 
     mounted(){
         this.getCourses();
+        this.initializeTemporaryCartStorage();
+        this.getCoursesInCart();
+        // console.log("anonymous user cart: ", JSON.stringify(JSON.parse(localStorage.getItem('_BNA_cart'))))
     }
 }
 </script>

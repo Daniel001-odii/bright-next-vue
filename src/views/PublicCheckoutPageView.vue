@@ -1,5 +1,52 @@
 <template>
 <div class="h-screen">
+    <nav class="flex flex-row p-3 justify-between items-center bg-slate-50 text-white">
+    <img src="../assets/bright-next-logo.png" class="w-[200px]">
+
+    <div class="flex flex-row gap-5 text-blue-600 font-bold justify-evenly">
+        <div class="hidden md:inline-block">Faculty</div>
+        <div class="hidden md:inline-block">Be Certified Ready</div>
+        <div class="hidden md:inline-block">Individual</div>
+        <div class="hidden md:inline-block">Enterprise</div>
+        <RouterLink to="/login">
+            <div>Login</div>
+        </RouterLink>
+    </div>
+
+    <div class="flex flex-row gap-3 justify-evenly">
+        <div class="relative">
+            <button @click="cart_menu = !cart_menu" class=" bg-bna_green p-3 rounded-xl text-white font-bold h-10 w-10 text-2xl relative flex justify-center place-items-center">
+                <i class="bi bi-cart"></i>
+                <div v-if="user_cart.length > 0" class="bg-red-500 px-2 absolute rounded-full -top-2 -right-2 text-sm">{{ user_cart.length }}</div>
+            </button>
+            <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
+                <div class="flex flex-col">
+                    <div class="font-bold flex flex-row justify-between text-black">
+                        <span>Course</span>
+                        <span>Price</span>
+                    </div>
+                    <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-3 justify-between" v-for="(course, index) in user_cart" :key="index">
+                        <div class="flex flex-row gap-3">
+                            <button @click="removeCourseFromTemporaryCartStorage(course._id)"><i class="bi bi-x-lg"></i></button>
+                            <span class="w-[70%]">{{ course.title }}</span>
+                        </div>
+                        <div>{{ course.price }}</div>
+                    </div>
+                </div>
+                <div class="w-full border-t-gray-200 border-t-2"></div>
+                <RouterLink to="/checkout">
+                    <button class="bg-bna_green w-fit text-white p-5 rounded-full shadow-blue-400 shadow-lg">PROCEED TO CHECKOUT</button> 
+                </RouterLink>
+            </div>
+        </div>
+
+
+      <button class=" bg-orange-400 p-3 rounded-xl text-white font-bold">Get Started</button>
+      <button class=" bg-blue-800 p-3 rounded-xl text-white font-bold hidden md:inline-block">Book a Demo</button>
+    </div>
+  </nav>
+
+
     <div class=" flex flex-col justify-center items-center w-full mt-10">
         <section class=" flex flex-col w-[300px] relative h-6 items-center">
             <div class="flex w-[80%] bg-gray-200 h-0.5 dark:bg-gray-700"></div>
@@ -70,7 +117,8 @@
                                     </label>
                                     <label class=" flex flex-col grow">
                                         <span>CONFIRM EMAIL*</span>
-                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email_confirmation" class="form_input" v-model="user.email">
+                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email_confirmation" class="form_input" :class="user.email != user.confirm_email ? 'border-red-500':''" v-model="user.confirm_email">
+                                        <small class="text-red-500" v-if="user.email != user.confirm_email">email confirmation does not match with original email</small>
                                     </label>
                                 </div>
 
@@ -79,11 +127,12 @@
                                         <input id="link-checkbox" type="checkbox" v-model="accept_TOS" class="w-4 h-4 text-bna_blue bg-gray-100 border-gray-300 rounded focus:ring-bna_blue dark:focus:ring-bna_blue dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">By continuing you accept the <a href="#" class="text-bna_blue dark:text-blue-500 hover:underline">terms of usage.</a>.</label>
                                     </div>
+                                    
                                 </div>
 
                                 <div class="py-5 flex flex-row justify-end gap-6">
                                     <button type="button" class="form_btn bg-bna_green">CANCEL</button>
-                                    <button type="button" class="form_btn bg-bna_blue" @click="tab += 1" :disabled="!accept_TOS">CONTINUE</button>
+                                    <button type="button" class="form_btn bg-bna_blue" @click="tab += 1" :disabled="!accept_TOS || !user.firstname || !user.lastname || !user.email">CONTINUE</button>
                                 </div>
                             </div>
                         </div>
@@ -97,13 +146,10 @@
                                         <p class="w-[70%]">{{ course.title}}</p>
                                         <span>$ {{ course.price }}</span>
                                     </div>
-                                    <div v-if="course" class="font-bold text-lg flex flex-row justify-between">
-                                        <p class="w-[70%]">{{ course.title}}</p>
-                                        <span>$ {{ course.price }}</span>
-                                    </div>
+                                    
                                     <div class="font-bold text-lg flex flex-row justify-between text-bna_blue">
                                         <p>Total</p>
-                                        <span>$ {{ course.price }}.00</span>
+                                        <span>$ {{ (courses.reduce((total, course) => total + parseInt(course.price), 0)).toLocaleString()}}.00</span>
                                     </div>
                                 </div>
                                 <div class="py-5 flex flex-row justify-end gap-6">
@@ -179,18 +225,9 @@
                             </div>
 
                             <div v-if="courses" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md" v-for="(course, index) in courses" :key="index">
-                                
                                 <div class="flex flex-row items-center gap-3 max-w-[70%]">
-                                    <button @click="removeCourse(index)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
+                                    <button @click="removeCourse(index)" v-if="courses.length > 1" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
                                     <span>{{ course.title }} {{ index }}</span>
-                                </div>
-                                <span>$ {{ course.price }}</span>
-                            </div>
-                            <div v-if="course" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md">
-                                
-                                <div class="flex flex-row items-center gap-3 max-w-[70%]">
-                                    <button @click="removeCourse(index)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
-                                    <span>{{ course.title }}</span>
                                 </div>
                                 <span>$ {{ course.price }}</span>
                             </div>
@@ -198,7 +235,7 @@
                             <div class="border-b"></div>
                             <div class="w-full flex flex-row font-bold justify-between">
                                 <span>Subtotal</span>
-                                <span>${{ course.price }}</span>
+                                <span>${{ (courses.reduce((total, course) => total + parseInt(course.price), 0)).toLocaleString() }}</span>
                             </div>
                             <div class="w-full flex flex-row font-bold justify-between">
                                 <span>Estimated Tax</span>
@@ -234,6 +271,7 @@ import ThankyouPageView from './ThankyouPageView.vue';
                     firstname: '',
                     lastname: '',
                     email: '',
+                    confirm_email: '',
                 },
                 tab: 0,
                 courses: [],
@@ -251,7 +289,10 @@ import ThankyouPageView from './ThankyouPageView.vue';
 
                 headers: {
                     Authorization: `JWT ${localStorage.getItem('BNA')}`
-                }
+                },
+
+                user_cart: '',
+                cart_menu: false,
 
             }
         },
@@ -302,10 +343,40 @@ import ThankyouPageView from './ThankyouPageView.vue';
                 }
             },
 
+            // get courses in temporary storage...
+            async getCoursesInCart() {
+                const body = {
+                        coursesArray: JSON.parse(localStorage.getItem('_BNA_cart')),
+                    };
+                console.log("courses currently in cart: ", body)
+                try {
+                    const response = await axios.post(`${this.api_url}/courses/array`, body);
+                    console.log("courses array: ", response);
+                    this.courses = response.data;
+                    this.user_cart = response.data;
+                } catch (error) {
+                    console.debug("failed to get course list: ", error);
+                }
+            },
+
+            removeCourseFromTemporaryCartStorage(course_id) {
+                // Get the cart object
+                let temporaryCart = JSON.parse(localStorage.getItem('_BNA_cart'));
+                
+                // Check if the course is already existing to prevent double addition
+                if (temporaryCart.includes(course_id)) {
+                    // Filter out the course_id from the temporaryCart
+                    temporaryCart = temporaryCart.filter(id => id !== course_id);
+                    localStorage.setItem('_BNA_cart', JSON.stringify(temporaryCart));
+                };
+                this.getCoursesInCart();
+            },
+
+
         },
 
         mounted(){
-            this.getCourseDetails();
+            this.getCoursesInCart();
         },
 
     

@@ -92,7 +92,7 @@
                             </div>
                         </div>
 
-                        <div class="" v-if="tab == 1">
+                        <div v-if="tab == 1">
                             <h1 class="font-bold text-2xl">2- Review</h1>
                             <div class="mt-3 rounded-xl bg-white  flex flex-col gap-8 p-10">
                                 <h2 class="font-bold text-xl">Your Order</h2>
@@ -118,23 +118,23 @@
                             </div>
                         </div>
 
-                        <div class="" v-if="tab == 2">
+                        <div v-if="tab == 2">
                             <h1 class="font-bold text-2xl">3- Payment</h1>
                             <div class="mt-3 rounded-xl bg-white flex flex-col gap-3 p-10">
 
                                 <!-- IMPORT STRIPE COMPONENT HERE -->
                                 <div class="flex flex-col gap-2 justify-start items-start">
                                     <h2 class="font-bold text-xl">Credit Card</h2>
-                                    <div id="checkout">
+                                    <div id="checkout" class=" w-full flex justify-center items-center">
 
                                     </div>
-                                   
                                 </div>
                                
                                 <div class="flex flex-col gap-2 justify-start items-start mt-6">
                                     <h2 class="font-bold text-xl">Paypal</h2>
                                     <button type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
-                                        CONNECT</button>
+                                        CONNECT
+                                    </button>
                                 </div>
 
                                 <div class="flex flex-row flex-wrap gap-3 justify-betweeni items-end">
@@ -162,6 +162,7 @@
                     </form>
 
                 </div>
+
 
                 <div class="w-full md:w-[40%] mt-3 md:m-0">
                     <button @click="$router.go(-1)" class=" self-start font-bold text-bna_green"> 
@@ -213,6 +214,7 @@ import axios from 'axios';
 import PayPal from 'vue-paypal-checkout'
 import ThankyouPageView from './ThankyouPageView.vue';
 
+import { stripePromise } from '../main'
 
     export default {
         name: "CheckoutPageView",
@@ -326,7 +328,6 @@ import ThankyouPageView from './ThankyouPageView.vue';
                 }
             },
 
-
             async getUserCart() {
                 const headers = this.headers;
 
@@ -342,13 +343,30 @@ import ThankyouPageView from './ThankyouPageView.vue';
                 }catch(error){
                     console.log("error getting user cart: ", error)
                 }
-            }
+            },
+
+            async initialize() {
+                const clientSecret = await this.fetchClientSecret();
+                const stripe = await stripePromise;
+                const checkout = await stripe.initEmbeddedCheckout({
+                    fetchClientSecret: () => Promise.resolve(clientSecret),
+                });
+                checkout.mount('#checkout');
+            },
+
+            async fetchClientSecret() {
+                const response = await axios.post(`${this.api_url}/payment/create-checkout-session`);
+                console.log("response from create payment session: ", response);
+                return response.data.session.client_secret;
+            },
         },
 
         mounted(){
             this.getUser();
             // this.getCourseDetails();
             this.getUserCart();
+
+            this.initialize();
 
             // cart cannot be empty and user is allowed to checkout...
             // if(this.$route.name == "checkout" && !this.cart.course){
@@ -375,5 +393,11 @@ import ThankyouPageView from './ThankyouPageView.vue';
 
     button:disabled{
         @apply bg-gray-400 cursor-not-allowed
+    }
+
+
+    #checkout > .App-Container{
+        width: 100% !important;
+        border: 3px solid red !important;
     }
 </style>
