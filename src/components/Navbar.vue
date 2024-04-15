@@ -51,7 +51,7 @@
                             <span>Course</span>
                             <span>Price</span>
                         </div>
-                        <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-2" v-for="course in cart">
+                        <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-2 justify-between" v-for="course in cart">
                             <div class="flex flex-row gap-3">
                                 <button @click="removeCourse(course._id)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
                                 <span class="w-[70%]">{{ course.title }}</span>

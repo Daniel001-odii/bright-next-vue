@@ -22,11 +22,11 @@
             <div class="flex flex-row gap-8 mt-3">
                 <button class="bna_btn bg-bna_green"><i class="bi bi-plus-lg"></i> ADD TO CART</button>
 
-                <RouterLink v-if="user" :to="'/bn/checkout/' + course.title">
+                <!-- <RouterLink v-if="user" :to="'/bn/checkout/' + course.title">
                     <button class="bna_btn bg-bna_blue">ENROLL TODAY</button>
-                </RouterLink>
+                </RouterLink> -->
 
-                <RouterLink v-else :to="'/checkout/' + course.title">
+                <RouterLink :to="'/checkout'">
                     <button class="bna_btn bg-bna_blue">ENROLL TODAY</button>
                 </RouterLink>
                

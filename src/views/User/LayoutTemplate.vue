@@ -54,10 +54,10 @@
                 </RouterLink>
 
                 <!-- <RouterLink to="#"> -->
-                    <div class="nav_item group hover:text-bna_blue">
-                        <i class="bi bi-door-open nav_item_icon group-hover:bg-bna_blue" :class="{ 'active_icon': isLanguage }"></i>
+                    <button type="button" @click="logout" class="nav_item group hover:text-bna_blue">
+                        <i class="bi bi-door-open nav_item_icon group-hover:bg-bna_blue"></i>
                         <span class="link_name" :class="full_side_bar_content ? 'inline-block':'hidden'">Logout</span>
-                    </div>
+                    </button>
                 <!-- </RouterLink> -->
             </div>
 
@@ -87,7 +87,12 @@ import Navbar from '@/components/Navbar.vue';
         methods:{
             toggle_side_bar(){
                 this.full_side_bar_content = !this.full_side_bar_content;
-            }
+            },
+
+            logout(){
+                localStorage.removeItem('BNA');
+                this.$router.push('/login');
+            },
         },
         computed: {
             isProfile() { return this.$route.path.startsWith("/user/profile"); },

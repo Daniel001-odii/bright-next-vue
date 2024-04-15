@@ -101,10 +101,6 @@
                                         <p class="w-[70%]">{{ course.title}}</p>
                                         <span>$ {{ course.price }}</span>
                                     </div>
-                                    <!-- <div v-if="course" class="font-bold text-lg flex flex-row justify-between">
-                                        <p class="w-[70%]">{{ course.title}}</p>
-                                        <span>$ {{ course.price }}</span>
-                                    </div> -->
                                     <div class="font-bold text-lg flex flex-row justify-between text-bna_blue">
                                         <p>Total</p>
                                         <span>$ {{ total_price.toLocaleString() }}.00</span>
@@ -112,7 +108,11 @@
                                 </div>
                                 <div class="py-5 flex flex-row justify-end gap-6">
                                     <button type="button" class="form_btn bg-bna_green" @click="tab -= 1">GO BACK</button>
-                                    <button type="button" class=" self-end form_btn bg-bna_blue" @click="tab += 1">PURCHASE</button>
+                                    <button type="button" class=" self-end form_btn bg-bna_blue" @click="tab += 1">
+                                        <!-- <span v-if="payment_loading">loading...</span>
+                                       <span v-else>PURCHASE</span>  -->
+                                       PURCHASE
+                                    </button>
                                 </div>
                                 
                             </div>
@@ -226,7 +226,7 @@ import { stripePromise } from '../main'
                     lastname: '',
                     email: '',
                 },
-                tab: 2,
+                tab: 1,
                 courses: [],
                 course: {
                     title: '',
@@ -248,6 +248,8 @@ import { stripePromise } from '../main'
                 total_price: 0,
 
                 has_discount_code: false,
+
+                payment_loading: false,
 
             }
         },
@@ -328,6 +330,23 @@ import { stripePromise } from '../main'
                 }
             },
 
+
+            async initiateStripePayment(){
+                this.course.name = "Course Purchase";
+                this.course.price = this.total_price;
+                const form = {
+                    course_product: this.course,
+                };
+
+                try{
+                    const response = await axios.post(`${this.api_url}/payment/create-checkout-session`, form);
+                    // console.log("response from stripe payment :", response);
+                    return response.data.session.client_secret;
+                }catch(error){
+                    console.log("error with stripe payment: ", error);
+                }
+            },
+
             async getUserCart() {
                 const headers = this.headers;
 
@@ -346,12 +365,15 @@ import { stripePromise } from '../main'
             },
 
             async initialize() {
+                this.payment_loading = true;
                 const clientSecret = await this.fetchClientSecret();
                 const stripe = await stripePromise;
                 const checkout = await stripe.initEmbeddedCheckout({
                     fetchClientSecret: () => Promise.resolve(clientSecret),
                 });
                 checkout.mount('#checkout');
+                this.payment_loading = false;
+                this.tab += 1;
             },
 
             async fetchClientSecret() {
