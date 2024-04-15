@@ -27,7 +27,7 @@
                 </RouterLink> -->
 
                 <RouterLink :to="'/checkout'">
-                    <button class="bna_btn bg-bna_blue">ENROLL TODAY</button>
+                    <button @click="addCourseToTemporaryStorage(course._id)" class="bna_btn bg-bna_blue">ENROLL TODAY</button>
                 </RouterLink>
                
             </div>
@@ -65,6 +65,22 @@ import axios from 'axios';
                     // alert(error.response.data.message);
                 }
             },
+
+            addCourseToTemporaryStorage(course_id){
+            // get the cart object..
+            let temporaryCart = JSON.parse(localStorage.getItem('_BNA_cart'));
+
+            // check if the course is already existing so it doesnt get double added...
+            if(!temporaryCart.includes(course_id)){
+                temporaryCart.push(course_id);
+                localStorage.setItem('_BNA_cart', JSON.stringify(temporaryCart));
+            }
+           
+            // Go to the checkout page after a delay
+            window.setTimeout(() => {
+                this.$router.push('/checkout');
+            }, 1000);
+        },
 
             async getCourseDetails(){
                 this.loading = true;
