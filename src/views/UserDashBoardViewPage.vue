@@ -203,12 +203,6 @@ export default {
             return date.toLocaleDateString(undefined, options);
         },
 
-
-        // enrollCourse(){
-        //     store.dispatch('addCourseToCart');
-        //     this.$router.push(`/bn/checkout`);
-        // },
-
         // add course to users cart temporarily...
         async addCourseToCart(course_id, course_title){
             const headers = {

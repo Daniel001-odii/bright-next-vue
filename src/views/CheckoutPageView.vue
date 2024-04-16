@@ -53,9 +53,15 @@
                     </button>
 
                     <form @submit.prevent="payWithStripe"class="mt-3">
-                        <div v-if="tab == 0">
-                            <h1 class="font-bold text-2xl">1- Account Details</h1>
-                            <div class="mt-3 rounded-xl bg-white flex flex-col gap-8 p-10">
+                        <div class="mt-3">
+                            <h1 class="font-bold text-2xl" :class="tab > 0 ? 'bg-white p-5 w-full':''">
+                                <span v-if="tab > 0"> <i class="bi bi-check-circle-fill text-bna_green"></i></span>
+                                <span v-else>
+                                   1 -
+                                </span> 
+                                Account Details
+                            </h1>
+                            <div v-if="tab == 0" class="mt-3 rounded-xl bg-white flex flex-col gap-8 p-10">
                                 <div class="flex flex-row gap-10 flex-wrap">
                                     <label class=" flex flex-col grow">
                                         <span>FIRST NAME*</span>
@@ -92,9 +98,15 @@
                             </div>
                         </div>
 
-                        <div v-if="tab == 1">
-                            <h1 class="font-bold text-2xl">2- Review</h1>
-                            <div class="mt-3 rounded-xl bg-white  flex flex-col gap-8 p-10">
+                        <div class="mt-3">
+                            <h1 class="font-bold text-2xl" :class="tab != 1 ? 'bg-white p-5 w-full':''">
+                                <span v-if="tab > 1"> <i class="bi bi-check-circle-fill text-bna_green"></i></span>
+                                <span v-else>
+                                   2 -
+                                </span> 
+                                Review
+                            </h1>
+                            <div v-if="tab == 1" class="mt-3 rounded-xl bg-white  flex flex-col gap-8 p-10">
                                 <h2 class="font-bold text-xl">Your Order</h2>
                                 <div class="bg-gray-100 rounded-3xl p-6 flex flex-col gap-3">
                                     <div v-if="cart" class="font-bold text-lg flex flex-row justify-between" v-for="course in cart">
@@ -114,13 +126,12 @@
                                        PURCHASE
                                     </button>
                                 </div>
-                                
                             </div>
                         </div>
 
-                        <div v-if="tab == 2">
-                            <h1 class="font-bold text-2xl">3- Payment</h1>
-                            <div class="mt-3 rounded-xl bg-white flex flex-col gap-3 p-10">
+                        <div class="mt-3">
+                            <h1 class="font-bold text-2xl" :class="tab != 2 ? 'bg-white p-5 w-full':''">3- Payment</h1>
+                            <div v-if="tab == 2" class="mt-3 rounded-xl bg-white flex flex-col gap-3 p-10">
 
                                 <!-- IMPORT STRIPE COMPONENT HERE -->
                                 <div class="flex flex-col gap-2 justify-start items-start">
@@ -385,15 +396,11 @@ import { stripePromise } from '../main'
 
         mounted(){
             this.getUser();
-            // this.getCourseDetails();
+
             this.getUserCart();
 
             this.initialize();
 
-            // cart cannot be empty and user is allowed to checkout...
-            // if(this.$route.name == "checkout" && !this.cart.course){
-            //     this.$router.push("/bn/dashboard");
-            // }
         },
 
     
