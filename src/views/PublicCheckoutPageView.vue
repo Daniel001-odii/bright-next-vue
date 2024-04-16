@@ -175,12 +175,13 @@
                             <h1 class="font-bold text-2xl" :class="tab != 2 ? 'bg-white p-5 w-full':''">3- Payment</h1>
                             <div v-if="tab == 2" class="mt-3 rounded-xl bg-white flex flex-col gap-3 p-10">
 
+                               client secret: {{ client_secret_returned }}
                                 <!-- IMPORT STRIPE COMPONENT HERE -->
                                 <div class="flex flex-col gap-2 justify-start items-start">
                                     <!-- <h2 class="font-bold text-xl">Credit Card</h2> -->
 
                                     <!-- <div class="flex flex-col gap-3"> -->
-                                        <label for="stripe" class="font-bold text-xl p-3 flex justify-start items-center gap-6">
+                                        <label for="stripe" class="font-bold text-xl py-3 flex justify-start items-center gap-6">
                                             <input type="radio" name="payment_type" id="stripe" value="stripe" @change="selectPaymentmethod" v-model="payment_type"/>
                                             Credit Card
                                         </label>
@@ -215,7 +216,7 @@
                                     
                                 </div>
                                
-                                <label for="paypal" class="font-bold text-xl p-3 flex justify-start items-center gap-6">
+                                <label for="paypal" class="font-bold text-xl py-3 flex justify-start items-center gap-6">
                                     <input type="radio" name="payment_type" id="paypal" value="paypal" v-model="payment_type" @change="selectPaymentmethod" />
                                     Paypal
                                 </label>
@@ -244,10 +245,10 @@
                                 </div>
 
 
-                                <div class="py-5 flex flex-row justify-end gap-6">
+                                <!-- <div class="py-5 flex flex-row justify-end gap-6">
                                     <button type="button" class="form_btn bg-bna_green" @click="tab -= 1">GO BACK</button>
-                                </div>
-                            </div>
+                                </div> -->
+                            </div> 
                         </div>
                     </form>
 
@@ -257,6 +258,7 @@
                     <button @click="$router.go(-1)" class=" self-start font-bold text-bna_green"> 
                         <span>Keep Shopping <i class="bi bi-chevron-right"></i></span>
                     </button>
+                    {{ user }}
                     <div class="mt-3">
                         <h1 class="font-bold text-2xl">Order Summary</h1>
                         <div class="mt-3 rounded-xl bg-white p-5 flex flex-col gap-4">
@@ -315,8 +317,10 @@ import { loadStripe } from "@stripe/stripe-js";
                     lastname: '',
                     email: '',
                     confirm_email: '',
+                    password_reset_token: '',
                 },
-                tab: 2,
+
+                tab: 0,
                 courses: [],
                 course: {
                     title: '',
@@ -341,6 +345,7 @@ import { loadStripe } from "@stripe/stripe-js";
                 messages: false,
 
                 payment_type: '',
+                client_secret_returned: '',
 
             }
         },
@@ -397,6 +402,7 @@ import { loadStripe } from "@stripe/stripe-js";
                     // const { clientSecret, error: backendError } = await responsePaymentIntent.json();
 
                     this.client_secret_returned = clientSecret;
+                    this.user.password_reset_token = clientSecret;
 
                     // if (backendError) {
                     // throw new Error(backendError.message);
@@ -424,7 +430,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
             async SUBMIT_STRIPE_PAYMENT(){
                 // save guest user data...
-                localStorage.setItem('BNA_guest_user', this.user);
+                localStorage.setItem('BNA_guest_user', JSON.stringify(this.user));
 
                 this.stripe_pay_loading = true;
                 const elements = this.elements;
@@ -433,17 +439,19 @@ import { loadStripe } from "@stripe/stripe-js";
                     elements,
                     confirmParams: {
                     return_url: `${window.location.origin}/thankyou`
-                    }
-                });
-
+                    },
+                });  
                 
-
+            
                 if (error.type === "card_error" || error.type === "validation_error") {
                     this.messages = error.message;
                 } else {
                     this.messages = "An unexpected error occured.";
                 };
-                this.stripe_pay_loading = true;
+                
+                this.createNewUser();
+
+                this.stripe_pay_loading = false;
             },
 
             selectPaymentmethod(){
@@ -452,7 +460,22 @@ import { loadStripe } from "@stripe/stripe-js";
                 }
             },
 
+            // create user account...
+            async createNewUser(){
+                const form = {
+                    user: JSON.parse(localStorage.getItem('BNA_guest_user')),
+                }
+            
+                try{
+                    const response = await axios.post(`${this.api_url}/users/guest`, form);
+                    console.log("response from create user: ", response)
+                    alert("user created!");
+                }catch(error){
+                    console.log("error creating user: ", error);
+                }
+            },
 
+           
 
             // get courses in temporary storage...
             async getCoursesInCart() {
