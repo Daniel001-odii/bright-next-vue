@@ -278,7 +278,10 @@
                             <div class="border-b"></div>
                             <div class="w-full flex flex-row font-bold justify-between">
                                 <span>Subtotal</span>
-                                <span>${{ (courses.reduce((total, course) => total + parseInt(course.price), 0)).toLocaleString() }}</span>
+                                <div>
+                                    <span v-if="has_discount_code" class=" text-bna_green">${{ total_price - (total_price * 0.05) }}</span>
+                                    <span :class="has_discount_code ? ' line-through text-[12px] text-gray-400':''">${{ total_price.toLocaleString() }}</span>
+                                </div>
                             </div>
                             <div class="w-full flex flex-row font-bold justify-between">
                                 <span>Estimated Tax</span>
@@ -512,9 +515,9 @@ import { loadStripe } from "@stripe/stripe-js";
         mounted(){
             this.getCoursesInCart();
 
-            if(this.payment_type == 'stripe'){
-                this.STRIPE_ELEMENTS_INIT()
-            }
+            // if(this.payment_type == 'stripe'){
+            //     this.STRIPE_ELEMENTS_INIT()
+            // }
 
             // if(this.tab == 2){
             //     this.STRIPE_ELEMENTS_INIT();

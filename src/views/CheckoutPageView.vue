@@ -436,7 +436,7 @@ import { loadStripe } from "@stripe/stripe-js";
                 } else {
                     this.messages = "An unexpected error occured.";
                 };
-                this.stripe_pay_loading = true;
+                this.stripe_pay_loading = false;
             },
 
             async startStripe(){
@@ -506,7 +506,7 @@ import { loadStripe } from "@stripe/stripe-js";
             store.dispatch('fetchCart');
 
             // new stripe elements...
-            this.STRIPE_ELEMENTS_INIT()
+            // this.STRIPE_ELEMENTS_INIT()
 
             // initialize stripe embedded page element...
             // this.initialize();
