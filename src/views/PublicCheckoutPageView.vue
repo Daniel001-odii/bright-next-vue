@@ -280,7 +280,7 @@
                                 <span>Subtotal</span>
                                 <div>
                                     <span v-if="has_discount_code" class=" text-bna_green">${{ total_price - (total_price * 0.05) }}</span>
-                                    <span :class="has_discount_code ? ' line-through text-[12px] text-gray-400':''">${{ total_price.toLocaleString() }}</span>
+                                    <span :class="has_discount_code ? ' line-through text-[12px] text-gray-400':''">${{ total_price }}</span>
                                 </div>
                             </div>
                             <div class="w-full flex flex-row font-bold justify-between">
