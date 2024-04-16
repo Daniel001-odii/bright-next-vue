@@ -52,7 +52,7 @@
                         <span><i class="bi bi-chevron-left"></i> Go back</span>
                     </button>
 
-                    <form @submit.prevent="payWithStripe"class="mt-3">
+                    <form @submit.prevent="coursePurchase" class="mt-3">
                         <div class="mt-3">
                             <h1 class="font-bold text-2xl" :class="tab > 0 ? 'bg-white p-5 w-full':''">
                                 <span v-if="tab > 0"> <i class="bi bi-check-circle-fill text-bna_green"></i></span>
@@ -136,9 +136,28 @@
                                 <!-- IMPORT STRIPE COMPONENT HERE -->
                                 <div class="flex flex-col gap-2 justify-start items-start">
                                     <h2 class="font-bold text-xl">Credit Card</h2>
-                                    <div id="stripe_checkout" class=" w-full flex justify-center items-center">
+                                   
+                                    <!-- <div id="stripe_checkout" class=" w-full flex justify-center items-center">
 
-                                    </div>
+                                    </div> -->
+                                    <!-- STRIPE ELEMENTS -->
+                                    <span>errors: {{ messages }}</span>
+                                    <form
+                                        id="payment-form"
+                                        @submit.prevent="SUBMIT_STRIPE_PAYMENT"
+                                        class="w-full"
+                                        >
+                                        <!-- <div id="link-authentication-element" /> -->
+                                        <div id="payment-element" />
+                                        <button
+                                            id="submit"
+                                            class="form_btn bg-bna_green mt-3"
+                                        >
+                                            Pay with stripe
+                                        </button>
+                                    </form>
+
+                                    
                                 </div>
                                
                                 <div class="flex flex-col gap-2 justify-start items-start mt-6">
@@ -228,6 +247,8 @@ import ThankyouPageView from './ThankyouPageView.vue';
 import { stripePromise } from '../main'
 import store from '@/store';
 
+import { loadStripe } from "@stripe/stripe-js";
+
     export default {
         name: "CheckoutPageView",
         components: { PayPal, ThankyouPageView },
@@ -260,8 +281,16 @@ import store from '@/store';
                 // total_price: 0,
 
                 has_discount_code: false,
-
                 payment_loading: false,
+
+                messages: '',
+
+                card_number: '',
+                expiry: '',
+                cvc: '',
+
+                token_from_stripe: '',
+
 
             }
         },
@@ -357,6 +386,97 @@ import store from '@/store';
                 console.log("response from create payment session: ", response);
                 return response.data.session.client_secret;
             },
+
+            async STRIPE_ELEMENTS_INIT() {
+                try {
+                    const responseConfig = await fetch("http://localhost:4242/config");
+                    if (!responseConfig.ok) {
+                    throw new Error('Failed to fetch config data');
+                    }
+                    const { publishableKey } = await responseConfig.json();
+
+                    const stripe = await loadStripe(publishableKey);
+
+                    const responsePaymentIntent = await fetch("http://localhost:4242/create-payment-intent");
+                    if (!responsePaymentIntent.ok) {
+                    throw new Error('Failed to create payment intent');
+                    }
+                    const { clientSecret, error: backendError } = await responsePaymentIntent.json();
+
+                    if (backendError) {
+                    throw new Error(backendError.message);
+                    }
+
+                    this.messages = "client secret returned";
+
+                    const elements = stripe.elements({clientSecret});
+
+                    const paymentElement = elements.create('payment');
+                    paymentElement.mount("#payment-element");
+
+                    const linkAuthenticationElement = elements.create("linkAuthentication");
+                    // linkAuthenticationElement.mount("#link-authentication-element");
+
+                    console.log("stripe client secret: ", clientSecret)
+                } catch (error) {
+                    console.log("error from stripe elements: ", error);
+                    this.messages = error.message;
+                }
+            },
+
+            async SUBMIT_STRIPE_PAYMENT(){
+                const { error } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                    return_url: `${window.location.origin}/return`
+                    }
+                });
+
+                if (error.type === "card_error" || error.type === "validation_error") {
+                    messages.value.push(error.message);
+                } else {
+                    messages.value.push("An unexpected error occured.");
+                }
+            },
+
+            async startStripe(){
+                const stripe = await loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+                const { token, error } = await stripe.createToken('card', {
+                    card: {
+                    number: this.card_number,
+                    exp_month: this.expiry.split('/')[0],
+                    exp_year: this.expiry.split('/')[1],
+                    cvc: this.cvc,
+                    },
+                });
+                this.token_from_stripe = token;
+                if (error) {
+                    console.error(error);
+                    // Handle error
+                } else {
+                    console.log(token);
+                    // Send token to your backend for payment processing
+                }
+            },
+
+            async handleStripeSubmit(){
+                try{
+                    const response = await axios.post('http://localhost:4242/process-payment', {
+                    token: this.token_from_stripe, // Replace with the actual token generated from Stripe.js
+                    });
+
+                    if (response.data.success) {
+                    console.log('Payment successful');
+                    // Redirect or show success message
+                    } else {
+                    console.error('Payment failed');
+                    // Show error message
+                    }
+                } catch (error) {
+                    console.error('Error processing payment:', error);
+                    // Show error message
+                }
+            }
         },
 
         computed: {
@@ -377,8 +497,11 @@ import store from '@/store';
             // get cart data from store...
             store.dispatch('fetchCart');
 
+            // new stripe elements...
+            this.STRIPE_ELEMENTS_INIT()
+
             // initialize stripe embedded page element...
-            this.initialize();
+            // this.initialize();
 
             // avoid users from checking out on empty cart...
             // if(this.cart.length <= 0){
