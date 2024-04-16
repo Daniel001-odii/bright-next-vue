@@ -1,11 +1,15 @@
 <template>
+    <div class="absolute z-10 bg-[#EEF0F7] h-screen w-full" v-if="set_password_screen">
+        <SetPassword/>
+    </div>
+
     <div class="w-full h-screen bubble_screen flex justify-center ">
         <div class=" mt-[150px] flex flex-col justify-center items-center h-[400px] w-[80%] bg-white rounded-3xl bg-opacity-80  backdrop-blur-md gap-3">
             <h1 class="font-bold text-2xl">Thank you! You're all set.</h1>
-            <p class="text-center p-5">We've sent a password reset link to the email address you provided on checkout. Change your password and continue enjoying bright next academy! </p>
-            <!-- <RouterLink to="/password">
-                <button class=" px-12 py-3 rounded-full font-bold text-lg text-white bg-bna_blue hover:bg-opacity-90 uppercase shadow-lg shadow-bna_blue">set password</button>
-            </RouterLink> -->
+            <p class="text-center p-5">We've sent a password reset link to <strong>johndoe@gmail.com</strong>! </p>
+            <!-- <RouterLink to="/password"> -->
+                <buttonn @click="set_password_screen = !set_password_screen" class=" px-12 py-3 rounded-full font-bold text-lg text-white bg-bna_blue hover:bg-opacity-90 uppercase shadow-lg shadow-bna_blue">set password</buttonn>
+            <!-- </RouterLink> -->
         </div>
     </div>
 </template>
@@ -14,8 +18,11 @@
 import { RouterLink } from 'vue-router';
 import axios from 'axios';
 
+import SetPassword from '../views/SetpasswordPageView'
+
     export default {
         name: "PublicThankyouPageView",
+        components: { SetPassword },
         props: {
             auth_user: Boolean,
             email: String,
@@ -23,6 +30,8 @@ import axios from 'axios';
         data(){
             return{
                 user:'',
+
+                set_password_screen: false,
             }
         },
         methods: {
@@ -46,7 +55,7 @@ import axios from 'axios';
         },
 
         mounted() {
-            this.getUser();
+            // this.getUser();
         }
 
     }
