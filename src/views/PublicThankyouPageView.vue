@@ -115,6 +115,7 @@ import axios from 'axios';
                     // this.token_error = response.data.message;
                 }catch(error){
                     console.log("error checking token", error);
+                    this.token_error = error.response.data.message;
 
                 }   
             }

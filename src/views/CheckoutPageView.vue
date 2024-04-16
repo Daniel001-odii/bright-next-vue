@@ -135,7 +135,17 @@
 
                                 <!-- IMPORT STRIPE COMPONENT HERE -->
                                 <div class="flex flex-col gap-2 justify-start items-start">
-                                    <h2 class="font-bold text-xl">Credit Card</h2>
+                                    <!-- <h2 class="font-bold text-xl">Credit Card</h2> -->
+
+                                    <!-- <div class="flex flex-col gap-3"> -->
+                                        <label for="stripe" class="font-bold text-xl py-3 flex justify-start items-center gap-6">
+                                            <input type="radio" name="payment_type" id="stripe" value="stripe" @change="selectPaymentmethod" v-model="payment_type"/>
+                                            Credit Card
+                                        </label>
+
+                                       
+                                        
+                                    <!-- </div> -->
                                    
                                     <!-- <div id="stripe_checkout" class=" w-full flex justify-center items-center">
 
@@ -144,6 +154,7 @@
                                     <span v-if="messages" class=" text-red-500">{{ messages }}</span>
                                
                                     <form
+                                    v-if="payment_type == 'stripe'"
                                         id="payment-form"
                                         @submit.prevent="SUBMIT_STRIPE_PAYMENT"
                                         class="w-full"
@@ -162,14 +173,19 @@
                                     
                                 </div>
                                
-                                <div class="flex flex-col gap-2 justify-start items-start mt-6">
+                                <label for="paypal" class="font-bold text-xl py-3 flex justify-start items-center gap-6">
+                                    <input type="radio" name="payment_type" id="paypal" value="paypal" v-model="payment_type" @change="selectPaymentmethod" />
+                                    Paypal
+                                </label>
+
+                                <div v-if="payment_type == 'paypal'" class="flex flex-col gap-2 justify-start items-start mt-6">
                                     <h2 class="font-bold text-xl">Paypal</h2>
                                     <button type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
                                         CONNECT
                                     </button>
                                 </div>
 
-                                <div class="flex flex-row flex-wrap gap-3 justify-betweeni items-end">
+                                <div v-if="payment_type == 'stripe' || payment_type == 'paypal'" class="flex flex-row flex-wrap gap-3 justify-betweeni items-end">
                                     <div class="flex flex-row gap-3 items-end">
                                         <div class="flex flex-col gap-3 mt-6">
                                             <label for="promo_code" class="font-bold">PROMO CODE</label>
@@ -302,6 +318,8 @@ import { loadStripe } from "@stripe/stripe-js";
                 elements: '',
 
                 stripe_pay_loading: false,
+
+                payment_type: '',
 
 
             }
@@ -458,7 +476,14 @@ import { loadStripe } from "@stripe/stripe-js";
                     console.error('Error processing payment:', error);
                     // Show error message
                 }
-            }
+            },
+
+            
+            selectPaymentmethod(){
+                if(this.payment_type == 'stripe'){
+                    this.STRIPE_ELEMENTS_INIT();
+                }
+            },
         },
 
         computed: {
