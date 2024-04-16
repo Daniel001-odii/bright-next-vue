@@ -142,6 +142,7 @@
                                     </div> -->
                                     <!-- STRIPE ELEMENTS -->
                                     <span>errors: {{ messages }}</span>
+                                    <span>client secret: {{ client_secret_returned }}</span>
                                     <form
                                         id="payment-form"
                                         @submit.prevent="SUBMIT_STRIPE_PAYMENT"
@@ -291,6 +292,10 @@ import { loadStripe } from "@stripe/stripe-js";
 
                 token_from_stripe: '',
 
+                client_secret_returned: '',
+                stripe: '',
+                elements: '',
+
 
             }
         },
@@ -327,59 +332,6 @@ import { loadStripe } from "@stripe/stripe-js";
                 }
             },
 
-            async payWithStripe() {
-                this.stripe_loading = true;
-                const headers = this.headers;
-
-                const checkout = {
-                    name: this.course.title,
-                    amount: this.course.price,
-                    courses: [this.course._id],
-                };
-                console.log("testing: ", checkout)
-
-                try {
-                    const response = await axios.post(`${this.api_url}/payment/stripe`, checkout, { headers });
-                    console.log(response.data);
-                    this.stripe_loading = false;
-
-                    // send the user to the stripe checkout page...
-                    window.location.href = response.data.session_url;
-
-                    // Redirect to the checkout page or handle the session response as needed
-                } catch (error) {
-                    console.error(error);
-                    this.stripe_loading = false;
-                }
-            },
-
-            async initiateStripePayment(){
-                this.course.name = "Course Purchase";
-                this.course.price = this.total_price;
-                const form = {
-                    course_product: this.course,
-                };
-
-                try{
-                    const response = await axios.post(`${this.api_url}/payment/create-checkout-session`, form);
-                    // console.log("response from stripe payment :", response);
-                    return response.data.session.client_secret;
-                }catch(error){
-                    console.log("error with stripe payment: ", error);
-                }
-            },
-
-            async initialize() {
-                // this.payment_loading = true;
-                const clientSecret = await this.fetchClientSecret();
-                const stripe = await stripePromise;
-                const checkout = await stripe.initEmbeddedCheckout({
-                    fetchClientSecret: () => Promise.resolve(clientSecret),
-                });
-                checkout.mount('#stripe_checkout');
-                // this.payment_loading = false;
-                // this.tab += 1;
-            },
 
             async fetchClientSecret() {
                 const response = await axios.post(`${this.api_url}/payment/create-checkout-session`);
@@ -395,7 +347,7 @@ import { loadStripe } from "@stripe/stripe-js";
                     }
                     const { publishableKey } = await responseConfig.json();
 
-                    const stripe = await loadStripe(publishableKey);
+                    this.stripe = await loadStripe(publishableKey);
 
                     const responsePaymentIntent = await fetch("http://localhost:4242/create-payment-intent");
                     if (!responsePaymentIntent.ok) {
@@ -403,18 +355,20 @@ import { loadStripe } from "@stripe/stripe-js";
                     }
                     const { clientSecret, error: backendError } = await responsePaymentIntent.json();
 
+                    this.client_secret_returned = clientSecret;
+
                     if (backendError) {
                     throw new Error(backendError.message);
                     }
 
                     this.messages = "client secret returned";
 
-                    const elements = stripe.elements({clientSecret});
+                    this.elements = this.stripe.elements({clientSecret});
 
-                    const paymentElement = elements.create('payment');
+                    const paymentElement = this.elements.create('payment');
                     paymentElement.mount("#payment-element");
 
-                    const linkAuthenticationElement = elements.create("linkAuthentication");
+                    // const linkAuthenticationElement = elements.create("linkAuthentication");
                     // linkAuthenticationElement.mount("#link-authentication-element");
 
                     console.log("stripe client secret: ", clientSecret)
@@ -425,17 +379,19 @@ import { loadStripe } from "@stripe/stripe-js";
             },
 
             async SUBMIT_STRIPE_PAYMENT(){
+                const elements = this.elements;
+                const stripe = this.stripe;
                 const { error } = await stripe.confirmPayment({
                     elements,
                     confirmParams: {
-                    return_url: `${window.location.origin}/return`
+                    return_url: `${window.location.origin}/successfull`
                     }
                 });
 
                 if (error.type === "card_error" || error.type === "validation_error") {
-                    messages.value.push(error.message);
+                    this.messages = error.message;
                 } else {
-                    messages.value.push("An unexpected error occured.");
+                    this.messages = "An unexpected error occured.";
                 }
             },
 
