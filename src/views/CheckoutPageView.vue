@@ -281,7 +281,7 @@ import { loadStripe } from "@stripe/stripe-js";
                     lastname: '',
                     email: '',
                 },
-                tab: 2,
+                tab: 0,
                 courses: [],
                 course: {
                     title: '',
