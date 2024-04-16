@@ -112,7 +112,7 @@ import axios from 'axios';
                 try{
                     const response = await axios.post(`${this.api_url}/users/guest/${this.$route.query.payment_intent_client_secret}`);
                     console.log("response from token checker: ", response);
-                    this.token_error = response.data.message;
+                    // this.token_error = response.data.message;
                 }catch(error){
                     console.log("error checking token", error);
 

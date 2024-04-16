@@ -175,7 +175,7 @@
                             <h1 class="font-bold text-2xl" :class="tab != 2 ? 'bg-white p-5 w-full':''">3- Payment</h1>
                             <div v-if="tab == 2" class="mt-3 rounded-xl bg-white flex flex-col gap-3 p-10">
 
-                               client secret: {{ client_secret_returned }}
+                               <!-- client secret: {{ client_secret_returned }} -->
                                 <!-- IMPORT STRIPE COMPONENT HERE -->
                                 <div class="flex flex-col gap-2 justify-start items-start">
                                     <!-- <h2 class="font-bold text-xl">Credit Card</h2> -->
@@ -258,7 +258,7 @@
                     <button @click="$router.go(-1)" class=" self-start font-bold text-bna_green"> 
                         <span>Keep Shopping <i class="bi bi-chevron-right"></i></span>
                     </button>
-                    {{ user }}
+                    <!-- {{ user }} -->
                     <div class="mt-3">
                         <h1 class="font-bold text-2xl">Order Summary</h1>
                         <div class="mt-3 rounded-xl bg-white p-5 flex flex-col gap-4">
