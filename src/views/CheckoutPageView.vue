@@ -384,7 +384,7 @@ import { loadStripe } from "@stripe/stripe-js";
                 const { error } = await stripe.confirmPayment({
                     elements,
                     confirmParams: {
-                    return_url: `${window.location.origin}/successfull`
+                    return_url: `${window.location.origin}/bn/thankyou`
                     }
                 });
 
