@@ -341,7 +341,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
             async STRIPE_ELEMENTS_INIT() {
                 try {
-                    const responseConfig = await fetch("http://localhost:4242/config");
+                    const responseConfig = await fetch(`${this.api_url}/payment/config`);
                     if (!responseConfig.ok) {
                     throw new Error('Failed to fetch config data');
                     }
@@ -349,7 +349,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
                     this.stripe = await loadStripe(publishableKey);
 
-                    const responsePaymentIntent = await fetch("http://localhost:4242/create-payment-intent");
+                    const responsePaymentIntent = await fetch(`${this.api_url}/payment/create-payment-intent`);
                     if (!responsePaymentIntent.ok) {
                     throw new Error('Failed to create payment intent');
                     }
