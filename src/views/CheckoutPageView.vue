@@ -340,6 +340,10 @@ import { loadStripe } from "@stripe/stripe-js";
             },
 
             async STRIPE_ELEMENTS_INIT() {
+                // const submit_to_server = {
+                //     amount: this.total_price,
+                // }
+
                 try {
                     const responseConfig = await fetch(`${this.api_url}/payment/config`);
                     if (!responseConfig.ok) {
@@ -349,17 +353,27 @@ import { loadStripe } from "@stripe/stripe-js";
 
                     this.stripe = await loadStripe(publishableKey);
 
-                    const responsePaymentIntent = await fetch(`${this.api_url}/payment/create-payment-intent`);
-                    if (!responsePaymentIntent.ok) {
-                    throw new Error('Failed to create payment intent');
-                    }
-                    const { clientSecret, error: backendError } = await responsePaymentIntent.json();
+                    // const responsePaymentIntent = await fetch(`${this.api_url}/payment/create-payment-intent`);
+
+                    const responsePaymentIntent = await axios.post(`${this.api_url}/payment/create-payment-intent`);
+    
+                    console.log("response from payment intent: ", responsePaymentIntent)
+
+                    // if (!responsePaymentIntent.ok) {
+                    //     console.error("response from payment intent: ", responsePaymentIntent)
+                    //     throw new Error('Failed to create payment intent');
+                    
+                    // }
+
+                    const clientSecret = await responsePaymentIntent.data.clientSecret;
+
+                    // const { clientSecret, error: backendError } = await responsePaymentIntent.json();
 
                     this.client_secret_returned = clientSecret;
 
-                    if (backendError) {
-                    throw new Error(backendError.message);
-                    }
+                    // if (backendError) {
+                    // throw new Error(backendError.message);
+                    // }
 
                     // this.messages = "client secret returned";
 
@@ -442,6 +456,7 @@ import { loadStripe } from "@stripe/stripe-js";
             },
 
             total_price(){
+                // this.total_price = store.getters.getTotalPrice;
                 return store.getters.getTotalPrice;
             }
         },
