@@ -1,13 +1,12 @@
 <template>
 <div class="h-screen">
-    <nav class="flex flex-row p-3 justify-between items-center bg-slate-50 text-white">
+    
+<nav class="flex flex-row p-3 justify-between items-center bg-slate-50 text-white">
     <img src="../assets/bright-next-logo.png" class="w-[200px]">
 
     <div class="flex flex-row gap-5 text-blue-600 font-bold justify-evenly">
         <div class="hidden md:inline-block">Faculty</div>
         <div class="hidden md:inline-block">Be Certified Ready</div>
-        <div class="hidden md:inline-block">Individual</div>
-        <div class="hidden md:inline-block">Enterprise</div>
         <RouterLink to="/login">
             <div>Login</div>
         </RouterLink>
@@ -17,7 +16,7 @@
         <div class="relative">
             <button @click="cart_menu = !cart_menu" class=" bg-bna_green p-3 rounded-xl text-white font-bold h-10 w-10 text-2xl relative flex justify-center place-items-center">
                 <i class="bi bi-cart"></i>
-                <div v-if="user_cart.length > 0" class="bg-red-500 px-2 absolute rounded-full -top-2 -right-2 text-sm">{{ user_cart.length }}</div>
+                <div v-if="cart.length > 0" class="bg-red-500 px-2 absolute rounded-full -top-2 -right-2 text-sm">{{ cart.length }}</div>
             </button>
             <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
                 <div class="flex flex-col">
@@ -25,7 +24,7 @@
                         <span>Course</span>
                         <span>Price</span>
                     </div>
-                    <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-3 justify-between" v-for="(course, index) in user_cart" :key="index">
+                    <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-3 justify-between" v-for="(course, index) in cart" :key="index">
                         <div class="flex flex-row gap-3">
                             <button @click="removeCourseFromTemporaryCartStorage(course._id)"><i class="bi bi-x-lg"></i></button>
                             <span class="w-[70%]">{{ course.title }}</span>
@@ -44,7 +43,7 @@
       <button class=" bg-orange-400 p-3 rounded-xl text-white font-bold">Get Started</button>
       <button class=" bg-blue-800 p-3 rounded-xl text-white font-bold hidden md:inline-block">Book a Demo</button>
     </div>
-  </nav>
+</nav>
 
 
     <div class=" flex flex-col justify-center items-center w-full mt-10">
@@ -95,10 +94,16 @@
                         <span><i class="bi bi-chevron-left"></i> Go back</span>
                     </button>
 
-                    <form @submit.prevent="payWithStripe"class="mt-3">
-                        <div v-if="tab == 0">
-                            <h1 class="font-bold text-2xl">1- Account Details</h1>
-                            <div class="mt-3 rounded-xl bg-white flex flex-col gap-8 p-10">
+                    <form @submit.prevent="coursePurchase" class="mt-3">
+                        <div class="mt-3">
+                            <h1 class="font-bold text-2xl" :class="tab > 0 ? 'bg-white p-5 w-full':''">
+                                <span v-if="tab > 0"> <i class="bi bi-check-circle-fill text-bna_green"></i></span>
+                                <span v-else>
+                                   1 -
+                                </span> 
+                                Account Details
+                            </h1>
+                            <div v-if="tab == 0" class="mt-3 rounded-xl bg-white flex flex-col gap-8 p-10">
                                 <div class="flex flex-row gap-10 flex-wrap">
                                     <label class=" flex flex-col grow">
                                         <span>FIRST NAME*</span>
@@ -117,8 +122,7 @@
                                     </label>
                                     <label class=" flex flex-col grow">
                                         <span>CONFIRM EMAIL*</span>
-                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email_confirmation" class="form_input" :class="user.email != user.confirm_email ? 'border-red-500':''" v-model="user.confirm_email">
-                                        <small class="text-red-500" v-if="user.email != user.confirm_email">email confirmation does not match with original email</small>
+                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email_confirmation" class="form_input" v-model="user.email">
                                     </label>
                                 </div>
 
@@ -127,79 +131,100 @@
                                         <input id="link-checkbox" type="checkbox" v-model="accept_TOS" class="w-4 h-4 text-bna_blue bg-gray-100 border-gray-300 rounded focus:ring-bna_blue dark:focus:ring-bna_blue dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">By continuing you accept the <a href="#" class="text-bna_blue dark:text-blue-500 hover:underline">terms of usage.</a>.</label>
                                     </div>
-                                    
                                 </div>
 
                                 <div class="py-5 flex flex-row justify-end gap-6">
-                                    <button type="button" class="form_btn bg-bna_green">CANCEL</button>
-                                    <button type="button" class="form_btn bg-bna_blue" @click="tab += 1" :disabled="!accept_TOS || !user.firstname || !user.lastname || !user.email">CONTINUE</button>
+                                    <button type="button" class="form_btn bg-bna_green" @click="$router.go(-1)">CANCEL</button>
+                                    <button type="button" class="form_btn bg-bna_blue" @click="tab += 1" :disabled="!accept_TOS">CONTINUE</button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="" v-if="tab == 1">
-                            <h1 class="font-bold text-2xl">2- Review</h1>
-                            <div class="mt-3 rounded-xl bg-white  flex flex-col gap-8 p-10">
+                        <div class="mt-3">
+                            <h1 class="font-bold text-2xl" :class="tab != 1 ? 'bg-white p-5 w-full':''">
+                                <span v-if="tab > 1"> <i class="bi bi-check-circle-fill text-bna_green"></i></span>
+                                <span v-else>
+                                   2 -
+                                </span> 
+                                Review
+                            </h1>
+                            <div v-if="tab == 1" class="mt-3 rounded-xl bg-white  flex flex-col gap-8 p-10">
                                 <h2 class="font-bold text-xl">Your Order</h2>
                                 <div class="bg-gray-100 rounded-3xl p-6 flex flex-col gap-3">
-                                    <div v-if="courses" class="font-bold text-lg flex flex-row justify-between" v-for="course in courses">
+                                    <div v-if="cart" class="font-bold text-lg flex flex-row justify-between" v-for="course in cart">
                                         <p class="w-[70%]">{{ course.title}}</p>
                                         <span>$ {{ course.price }}</span>
                                     </div>
-                                    
                                     <div class="font-bold text-lg flex flex-row justify-between text-bna_blue">
                                         <p>Total</p>
-                                        <span>$ {{ (courses.reduce((total, course) => total + parseInt(course.price), 0)).toLocaleString()}}.00</span>
+                                        <!-- <span>$ {{ total_price.toLocaleString() }}.00</span> -->
                                     </div>
                                 </div>
                                 <div class="py-5 flex flex-row justify-end gap-6">
                                     <button type="button" class="form_btn bg-bna_green" @click="tab -= 1">GO BACK</button>
-                                    <button type="button" class=" self-end form_btn bg-bna_blue" @click="tab += 1">PURCHASE</button>
+                                    <button type="button" class=" self-end form_btn bg-bna_blue" @click="tab += 1">
+                                        <!-- <span v-if="payment_loading">loading...</span>
+                                       <span v-else>PURCHASE</span>  -->
+                                       PURCHASE
+                                    </button>
                                 </div>
-                                
                             </div>
                         </div>
 
-                        <div class="" v-if="tab == 2">
-                            <h1 class="font-bold text-2xl">3- Payment</h1>
-                            <div class="mt-3 rounded-xl bg-white flex flex-col gap-3 p-10">
+                        <div class="mt-3">
+                            <h1 class="font-bold text-2xl" :class="tab != 2 ? 'bg-white p-5 w-full':''">3- Payment</h1>
+                            <div v-if="tab == 2" class="mt-3 rounded-xl bg-white flex flex-col gap-3 p-10">
 
                                 <!-- IMPORT STRIPE COMPONENT HERE -->
                                 <div class="flex flex-col gap-2 justify-start items-start">
-                                    <h2 class="font-bold text-xl">Pay with Stripe</h2>
-                                    <button v-if="user" :disabled="stripe_loading" type="button" @click="payWithStripe" class=" bg-[#2C2C5E] text-white p-5 font-bold rounded-md w-full hover:bg-black">
-                                        <span v-if="stripe_loading" class="flex flex-row gap-3 justify-center items-center">
-                                            <div role="status">
-                                                <svg aria-hidden="true" class="inline w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-                                                </svg>
-                                                <span class="sr-only">Loading...</span>
-                                            </div>
-                                            <span>Loading Stripe Payment</span>
-                                        </span>
-                                        <span v-else>Checkout with Stripe <i class="bi bi-stripe"></i></span>
-                                    </button>
+                                    <h2 class="font-bold text-xl">Credit Card</h2>
+                                   
+                                    <!-- <div id="stripe_checkout" class=" w-full flex justify-center items-center">
 
-                                    <button v-else :disabled="stripe_loading" type="button" @click="payWithStripePublic" class=" bg-[#2C2C5E] text-white p-5 font-bold rounded-md w-full hover:bg-black">
-                                        <span v-if="stripe_loading" class="flex flex-row gap-3 justify-center items-center">
-                                            <div role="status">
-                                                <svg aria-hidden="true" class="inline w-6 h-6 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-                                                </svg>
-                                                <span class="sr-only">Loading...</span>
-                                            </div>
-                                            <span>Loading Stripe Payment</span>
-                                        </span>
-                                        <span v-else>Checkout with Stripe <i class="bi bi-stripe"></i></span>
-                                    </button>
+                                    </div> -->
+                                    <!-- STRIPE ELEMENTS -->
+                                    <span v-if="messages" class=" text-red-500">{{ messages }}</span>
+                               
+                                    <form
+                                        id="payment-form"
+                                        @submit.prevent="SUBMIT_STRIPE_PAYMENT"
+                                        class="w-full"
+                                        >
+                                        <!-- <div id="link-authentication-element" /> -->
+                                        <div id="payment-element" />
+                                        <button
+                                            id="submit"
+                                            class="form_btn bg-bna_green mt-3"
+                                            :disabled="stripe_pay_loading"
+                                        >
+                                            Pay with stripe
+                                        </button>
+                                    </form>
+
+                                    
                                 </div>
                                
                                 <div class="flex flex-col gap-2 justify-start items-start mt-6">
-                                    <h2 class="font-bold text-xl">Pay with Paypal</h2>
-                                    <button type="button" class=" bg-yellow-300 text-blue-900 p-5 font-bold rounded-md w-full hover:bg-yellow-400 hover:text-white">
-                                        Checkout with Paypal <i class="bi bi-paypal"></i></button>
+                                    <h2 class="font-bold text-xl">Paypal</h2>
+                                    <button type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
+                                        CONNECT
+                                    </button>
+                                </div>
+
+                                <div class="flex flex-row flex-wrap gap-3 justify-betweeni items-end">
+                                    <div class="flex flex-row gap-3 items-end">
+                                        <div class="flex flex-col gap-3 mt-6">
+                                            <label for="promo_code" class="font-bold">PROMO CODE</label>
+                                            <input type="text" class="rounded-md w-52 bg-slate-100" name="promo_code" id="promo_code" :disabled="has_discount_code"/>
+                                        </div>
+                                        <button type="button" class="form_btn bg-bna_green shadow-blue-300 shadow-lg">APPLY</button>
+                                    </div>
+                                    <div class="flex flex-row items-center gap-3 font-bold">
+                                        <span>or</span>
+                                        <input type="checkbox" class="bg-slate-100" v-model="has_discount_code"/>
+                                        <div class="flex p-2 border-dashed rounded-lg border-gray-700 border-2 ">SPRING</div>
+                                        <span>5% of discount</span>
+                                    </div>
                                 </div>
 
 
@@ -261,6 +286,8 @@ import axios from 'axios';
 import PayPal from 'vue-paypal-checkout'
 import ThankyouPageView from './ThankyouPageView.vue';
 
+import { loadStripe } from "@stripe/stripe-js";
+
 
     export default {
         name: "PublicCheckoutPageView",
@@ -273,7 +300,7 @@ import ThankyouPageView from './ThankyouPageView.vue';
                     email: '',
                     confirm_email: '',
                 },
-                tab: 0,
+                tab: 2,
                 courses: [],
                 course: {
                     title: '',
@@ -291,8 +318,11 @@ import ThankyouPageView from './ThankyouPageView.vue';
                     Authorization: `JWT ${localStorage.getItem('BNA')}`
                 },
 
-                user_cart: '',
+                cart: '',
                 cart_menu: false,
+                stripe_pay_loading: false,
+                has_discount_code: false,
+                messages: false,
 
             }
         },
@@ -318,30 +348,82 @@ import ThankyouPageView from './ThankyouPageView.vue';
                 }
             },
 
-            async payWithStripe() {
-                this.stripe_loading = true;
-                const checkout = {
-                    user: this.user,
-                    name: this.course.title,
-                    amount: this.course.price,
-                    courses: [this.course._id],
-                };
-                console.log("testing: ", checkout);
+            async STRIPE_ELEMENTS_INIT() {
+                this.stripe_pay_loading = true;
+
+                const submit_to_server = {
+                    amount: this.total_price,
+                }
 
                 try {
-                    const response = await axios.post(`${this.api_url}/payment/stripe/guest`, checkout);
-                    console.log(response.data);
-                    this.stripe_loading = false;
+                    const responseConfig = await fetch(`${this.api_url}/payment/config`);
+                    if (!responseConfig.ok) {
+                    throw new Error('Failed to fetch config data');
+                    }
+                    const { publishableKey } = await responseConfig.json();
 
-                    // send the user to the stripe checkout page...
-                    window.location.href = response.data.session_url;
+                    this.stripe = await loadStripe(publishableKey);
 
-                    // Redirect to the checkout page or handle the session response as needed
+                    const responsePaymentIntent = await axios.post(`${this.api_url}/payment/create-payment-intent`, submit_to_server);
+    
+                    console.log("response from payment intent: ", responsePaymentIntent)
+
+                    // if (!responsePaymentIntent.ok) {
+                    //     console.error("response from payment intent: ", responsePaymentIntent)
+                    //     throw new Error('Failed to create payment intent');
+                    
+                    // }
+
+                    const clientSecret = await responsePaymentIntent.data.clientSecret;
+
+                    // const { clientSecret, error: backendError } = await responsePaymentIntent.json();
+
+                    this.client_secret_returned = clientSecret;
+
+                    // if (backendError) {
+                    // throw new Error(backendError.message);
+                    // }
+
+                    // this.messages = "client secret returned";
+
+                    this.elements = this.stripe.elements({clientSecret});
+
+                    const paymentElement = this.elements.create('payment');
+                    paymentElement.mount("#payment-element");
+
+                    // const linkAuthenticationElement = elements.create("linkAuthentication");
+                    // linkAuthenticationElement.mount("#link-authentication-element");
+
+                    console.log("stripe client secret: ", clientSecret);
+                    this.stripe_pay_loading = false;
+
                 } catch (error) {
-                    console.error(error);
-                    this.stripe_loading = false;
+                    console.log("error from stripe elements: ", error);
+                    this.messages = error.message;
+                    this.stripe_pay_loading = false;
                 }
             },
+
+            async SUBMIT_STRIPE_PAYMENT(){
+                this.stripe_pay_loading = true;
+                const elements = this.elements;
+                const stripe = this.stripe;
+                const { error } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                    return_url: `${window.location.origin}/thankyou`
+                    }
+                });
+
+                if (error.type === "card_error" || error.type === "validation_error") {
+                    this.messages = error.message;
+                } else {
+                    this.messages = "An unexpected error occured.";
+                };
+                this.stripe_pay_loading = true;
+            },
+
+
 
             // get courses in temporary storage...
             async getCoursesInCart() {
@@ -353,7 +435,7 @@ import ThankyouPageView from './ThankyouPageView.vue';
                     const response = await axios.post(`${this.api_url}/courses/array`, body);
                     console.log("courses array: ", response);
                     this.courses = response.data;
-                    this.user_cart = response.data;
+                    this.cart = response.data;
                 } catch (error) {
                     console.debug("failed to get course list: ", error);
                 }
@@ -377,6 +459,7 @@ import ThankyouPageView from './ThankyouPageView.vue';
 
         mounted(){
             this.getCoursesInCart();
+            this.STRIPE_ELEMENTS_INIT();
         },
 
     
