@@ -129,7 +129,7 @@
                         </div>
                         <div class="w-full flex flex-row justify-between justify-self-end p-5">
                             <!-- <RouterLink :to="'/bn/checkout/' + course.title"> -->
-                                <button @click="enrollCourseTemp(course._id, course.title)" class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_green text-white">ENROLL TODAY</button>
+                                <button @click="addCourseToCart(course._id, course.title)" class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_green text-white">ENROLL TODAY</button>
                             <!-- </RouterLink> -->
                             
 
@@ -150,6 +150,7 @@
 <script>
 import axios from 'axios';
 import { formatTimestamp } from '../utils/formatDateTime';
+import store from '@/store';
 
 
 export default {
@@ -202,8 +203,14 @@ export default {
             return date.toLocaleDateString(undefined, options);
         },
 
+
+        // enrollCourse(){
+        //     store.dispatch('addCourseToCart');
+        //     this.$router.push(`/bn/checkout`);
+        // },
+
         // add course to users cart temporarily...
-        async enrollCourseTemp(course_id, course_title){
+        async addCourseToCart(course_id, course_title){
             const headers = {
                 Authorization : `JWT ${localStorage.getItem('BNA')}`,
             };
@@ -211,6 +218,11 @@ export default {
             try{
                 const response = await axios.post(`${this.api_url}/courses/${course_id}/enroll`, {}, { headers });
                 console.log("course enrolled...", response);
+
+                // update cart...
+                store.dispatch('fetchCart');
+
+                // open the checkout page...
                 this.$router.push(`/bn/checkout`);
             }catch(error){
                 console.log("error enrolling course...");

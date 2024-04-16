@@ -84,6 +84,9 @@ import axios from 'axios';
                     const response = await axios.post(`${this.api_url}/courses/${course_id}/enroll`, {}, { headers });
                     console.log("course enrolled...", response);
                     this.$router.push(`/bn/checkout/${course_title}`);
+
+                    // call fetchCart from store....
+                    store.dispatch('fetchCart');
                 }catch(error){
                     console.log("error enrolling course...");
                 }

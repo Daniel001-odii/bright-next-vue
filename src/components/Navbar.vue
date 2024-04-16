@@ -81,6 +81,7 @@
 <script>
 import axios from 'axios';
 import { formatTimestamp } from '../utils/formatDateTime';
+import store from '@/store';
 
 
 export default {
@@ -95,7 +96,7 @@ export default {
                 Authorization : `JWT ${localStorage.getItem('BNA')}`,
             },
 
-            cart: [],
+            // cart: [],
             total_price: 0,
         }
     },
@@ -137,7 +138,9 @@ export default {
             try{
                 const response = await axios.post(`${this.api_url}/cart/courses/${course_id}/remove`, {}, { headers });
                 console.log(response.data.message);
-                this.getUserCart();
+                
+                // update the cart generally for the remove course...
+                store.dispatch('fetchCart');
                 
             }catch(error){
                 console.log("error removing course from cart: ", error);
@@ -146,9 +149,10 @@ export default {
 
         toggleCartMenu(){
             this.cart_menu = !this.cart_menu;
-            this.getUserCart()
+            // this.getUserCart()
         }, 
 
+        /*
         async getUserCart() {
             const headers = this.headers;
 
@@ -165,15 +169,29 @@ export default {
                 console.log("error getting user cart: ", error)
             }
         }
+        */
     },
     computed: {
         userReadableDate() {
             return formatTimestamp(this.user_joined)
         },
+
+        // get cart data...
+        cart(){
+            return store.getters.getCart;
+        },
+
+        totalPrice(){
+            return store.getters.getTotalPrice;
+        }
     },
     mounted(){
         this.getUser();
-        this.getUserCart();
+
+        // get cart data from store...
+        store.dispatch('fetchCart');
+
+        // this.getUserCart();
     }
     
 }
