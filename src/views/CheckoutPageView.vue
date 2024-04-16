@@ -136,7 +136,7 @@
                                 <!-- IMPORT STRIPE COMPONENT HERE -->
                                 <div class="flex flex-col gap-2 justify-start items-start">
                                     <h2 class="font-bold text-xl">Credit Card</h2>
-                                    <div id="checkout" class=" w-full flex justify-center items-center">
+                                    <div id="stripe_checkout" class=" w-full flex justify-center items-center">
 
                                     </div>
                                 </div>
@@ -190,7 +190,7 @@
                             <div v-if="cart" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md" v-for="(course, index) in cart" :key="index">
                                 
                                 <div class="flex flex-row items-center gap-3 max-w-[70%]">
-                                    <button v-if="cart.length > 1" @click="removeCourse(course._id)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
+                                    <button v-if="cart.length > 1" @click="removeCourseFromCart(course._id)" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
                                     <span>{{ course.title }}</span>
                                 </div>
                                 <span>$ {{ course.price }}</span>
@@ -226,6 +226,7 @@ import PayPal from 'vue-paypal-checkout'
 import ThankyouPageView from './ThankyouPageView.vue';
 
 import { stripePromise } from '../main'
+import store from '@/store';
 
     export default {
         name: "CheckoutPageView",
@@ -237,7 +238,7 @@ import { stripePromise } from '../main'
                     lastname: '',
                     email: '',
                 },
-                tab: 1,
+                tab: 2,
                 courses: [],
                 course: {
                     title: '',
@@ -255,8 +256,8 @@ import { stripePromise } from '../main'
                     Authorization: `JWT ${localStorage.getItem('BNA')}`
                 },
 
-                cart: [],
-                total_price: 0,
+                // cart: [],
+                // total_price: 0,
 
                 has_discount_code: false,
 
@@ -266,34 +267,16 @@ import { stripePromise } from '../main'
         },
 
         methods:{
-            removeCourseOld(index) {
-                    this.courses.splice(index, 1);
-                    if(this.courses.length <= 0){
-                        // do not allow check out course be zero
-                        window.location.reload()
-                    }
-            },
-
-            async removeCourse(course_id){
+           
+            async removeCourseFromCart(course_id){
                 const headers = this.headers;
                 try{
                     const response = await axios.post(`${this.api_url}/cart/courses/${course_id}/remove`, {}, { headers });
                     console.log(response.data.message);
-                    this.getUserCart();
+                    // get cart data from store...
+                    store.dispatch('fetchCart');this.getUserCart();
                 }catch(error){
                     console.log("error removing course from cart: ", error);
-                }
-            },
-
-            async getCourseDetails(){
-                try{
-                    const response = await axios.get(`${this.api_url}/courses/${this.$route.params.course_title}`);
-                    console.log(response.data);
-                    this.course = response.data;
-                    // this.page_loading = false;
-                }catch(error){
-                    console.log(error.response.data);
-                    // this.page_loading = false;
                 }
             },
 
@@ -341,7 +324,6 @@ import { stripePromise } from '../main'
                 }
             },
 
-
             async initiateStripePayment(){
                 this.course.name = "Course Purchase";
                 this.course.price = this.total_price;
@@ -358,33 +340,16 @@ import { stripePromise } from '../main'
                 }
             },
 
-            async getUserCart() {
-                const headers = this.headers;
-
-                try{
-                    const response = await axios.get(`${this.api_url}/cart`, { headers });
-                    // console.log("user's cart: ", response);
-                    this.cart = response.data.cart.courses;
-                    this.total_price = 0;
-                    this.cart.forEach(course => {
-                        // Convert the price to a number and add it to the total price
-                        this.total_price += parseFloat(course.price);
-                    });
-                }catch(error){
-                    console.log("error getting user cart: ", error)
-                }
-            },
-
             async initialize() {
-                this.payment_loading = true;
+                // this.payment_loading = true;
                 const clientSecret = await this.fetchClientSecret();
                 const stripe = await stripePromise;
                 const checkout = await stripe.initEmbeddedCheckout({
                     fetchClientSecret: () => Promise.resolve(clientSecret),
                 });
-                checkout.mount('#checkout');
-                this.payment_loading = false;
-                this.tab += 1;
+                checkout.mount('#stripe_checkout');
+                // this.payment_loading = false;
+                // this.tab += 1;
             },
 
             async fetchClientSecret() {
@@ -394,12 +359,31 @@ import { stripePromise } from '../main'
             },
         },
 
+        computed: {
+            // get cart data...
+            cart(){
+                return store.getters.getCart;
+            },
+
+            total_price(){
+                return store.getters.getTotalPrice;
+            }
+        },
+
         mounted(){
+            // get user data...
             this.getUser();
 
-            this.getUserCart();
+            // get cart data from store...
+            store.dispatch('fetchCart');
 
+            // initialize stripe embedded page element...
             this.initialize();
+
+            // avoid users from checking out on empty cart...
+            // if(this.cart.length <= 0){
+            //     this.$router.push('/bn/dashboard')
+            // }
 
         },
 

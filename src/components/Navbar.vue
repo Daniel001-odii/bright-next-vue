@@ -141,6 +141,8 @@ export default {
                 
                 // update the cart generally for the remove course...
                 store.dispatch('fetchCart');
+
+                
                 
             }catch(error){
                 console.log("error removing course from cart: ", error);
