@@ -153,6 +153,7 @@
                                         <button
                                             id="submit"
                                             class="form_btn bg-bna_green mt-3"
+                                            :disabled="stripe_pay_loading"
                                         >
                                             Pay with stripe
                                         </button>
@@ -296,6 +297,8 @@ import { loadStripe } from "@stripe/stripe-js";
                 stripe: '',
                 elements: '',
 
+                stripe_pay_loading: false,
+
 
             }
         },
@@ -340,9 +343,11 @@ import { loadStripe } from "@stripe/stripe-js";
             },
 
             async STRIPE_ELEMENTS_INIT() {
-                // const submit_to_server = {
-                //     amount: this.total_price,
-                // }
+                this.stripe_pay_loading = true;
+
+                const submit_to_server = {
+                    amount: this.total_price,
+                }
 
                 try {
                     const responseConfig = await fetch(`${this.api_url}/payment/config`);
@@ -353,9 +358,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
                     this.stripe = await loadStripe(publishableKey);
 
-                    // const responsePaymentIntent = await fetch(`${this.api_url}/payment/create-payment-intent`);
-
-                    const responsePaymentIntent = await axios.post(`${this.api_url}/payment/create-payment-intent`);
+                    const responsePaymentIntent = await axios.post(`${this.api_url}/payment/create-payment-intent`, submit_to_server);
     
                     console.log("response from payment intent: ", responsePaymentIntent)
 
@@ -385,14 +388,18 @@ import { loadStripe } from "@stripe/stripe-js";
                     // const linkAuthenticationElement = elements.create("linkAuthentication");
                     // linkAuthenticationElement.mount("#link-authentication-element");
 
-                    console.log("stripe client secret: ", clientSecret)
+                    console.log("stripe client secret: ", clientSecret);
+                    this.stripe_pay_loading = false;
+
                 } catch (error) {
                     console.log("error from stripe elements: ", error);
                     this.messages = error.message;
+                    this.stripe_pay_loading = false;
                 }
             },
 
             async SUBMIT_STRIPE_PAYMENT(){
+                this.stripe_pay_loading = true;
                 const elements = this.elements;
                 const stripe = this.stripe;
                 const { error } = await stripe.confirmPayment({
@@ -406,7 +413,8 @@ import { loadStripe } from "@stripe/stripe-js";
                     this.messages = error.message;
                 } else {
                     this.messages = "An unexpected error occured.";
-                }
+                };
+                this.stripe_pay_loading = true;
             },
 
             async startStripe(){
