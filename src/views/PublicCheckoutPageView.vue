@@ -350,6 +350,8 @@ import { loadStripe } from "@stripe/stripe-js";
                 payment_type: '',
                 client_secret_returned: '',
 
+                total_price: 0,
+
             }
         },
 
@@ -491,6 +493,15 @@ import { loadStripe } from "@stripe/stripe-js";
                     console.log("courses array: ", response);
                     this.courses = response.data;
                     this.cart = response.data;
+
+                    const totalPrice = courses.reduce((sum, course) => {
+                    // Parse the price string to a number before adding to the sum
+                    return sum + parseFloat(course.price);
+                    // this.total_price = sum + parseFloat(course.price);
+                    }, 0);
+
+                    this.total_price = totalPrice;
+
                 } catch (error) {
                     console.debug("failed to get course list: ", error);
                 }
