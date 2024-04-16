@@ -141,8 +141,8 @@
 
                                     </div> -->
                                     <!-- STRIPE ELEMENTS -->
-                                    <span>errors: {{ messages }}</span>
-                                    <span>client secret: {{ client_secret_returned }}</span>
+                                    <span v-if="messages" class=" text-red-500">{{ messages }}</span>
+                               
                                     <form
                                         id="payment-form"
                                         @submit.prevent="SUBMIT_STRIPE_PAYMENT"
@@ -361,7 +361,7 @@ import { loadStripe } from "@stripe/stripe-js";
                     throw new Error(backendError.message);
                     }
 
-                    this.messages = "client secret returned";
+                    // this.messages = "client secret returned";
 
                     this.elements = this.stripe.elements({clientSecret});
 
