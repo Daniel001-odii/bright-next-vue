@@ -157,7 +157,7 @@
                                     </div>
                                     <div class="font-bold text-lg flex flex-row justify-between text-bna_blue">
                                         <p>Total</p>
-                                        <!-- <span>$ {{ total_price.toLocaleString() }}.00</span> -->
+                                        <span>$ {{ total_price.toLocaleString() }}.00</span>
                                     </div>
                                 </div>
                                 <div class="py-5 flex flex-row justify-end gap-6">
@@ -364,18 +364,6 @@ import { loadStripe } from "@stripe/stripe-js";
                     }
             },
 
-            async getCourseDetails(){
-                try{
-                    const response = await axios.get(`${this.api_url}/courses/${this.$route.params.course_title}`);
-                    console.log(response.data);
-                    this.course = response.data;
-                    // this.page_loading = false;
-                }catch(error){
-                    console.log(error.response.data);
-                    // this.page_loading = false;
-                }
-            },
-
             async STRIPE_ELEMENTS_INIT() {
                 this.stripe_pay_loading = true;
 
@@ -494,10 +482,10 @@ import { loadStripe } from "@stripe/stripe-js";
                     this.courses = response.data;
                     this.cart = response.data;
 
-                    const totalPrice = courses.reduce((sum, course) => {
+                    const totalPrice = this.courses.reduce((sum, course) => {
                     // Parse the price string to a number before adding to the sum
                     return sum + parseFloat(course.price);
-                    // this.total_price = sum + parseFloat(course.price);
+                    this.total_price = sum + parseFloat(course.price);
                     }, 0);
 
                     this.total_price = totalPrice;
