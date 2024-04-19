@@ -112,6 +112,7 @@ import SpinninLoader from '../components/SpinningLoader.vue'
 
                     // clear temp user data..
                     localStorage.removeItem('BNA_guest_user');
+                    localStorage.removeItem('_BNA_cart');
 
                 }catch(error){
                     console.log("error creating user: ", error);
