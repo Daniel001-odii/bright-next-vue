@@ -122,7 +122,8 @@
                                 <div class="flex flex-row gap-10 flex-wrap">
                                     <label class=" flex flex-col grow">
                                         <span>EMAIL*</span>
-                                        <input type="email" placeholder="e.g johndoe@gmail.com" name="email" class="form_input" v-model="user.email" >
+                                        <input @keyup="checkForExisitingEmail" type="email" placeholder="e.g johndoe@gmail.com" name="email" class="form_input" v-model="user.email" >
+                                        <small v-if="email_already_exists" class="text-red-500">There is already an account with this email address. <RouterLink to="/login" class="underline text-blue-500">Sign In</RouterLink> or <RouterLink to="/password/reset" class="underline text-blue-500">Reset password</RouterLink></small>
                                     </label>
                                     <label class=" flex flex-col grow">
                                         <span>CONFIRM EMAIL*</span>
@@ -139,7 +140,7 @@
 
                                 <div class="py-5 flex flex-row justify-end gap-6">
                                     <button type="button" class="form_btn bg-bna_green" @click="$router.go(-1)">CANCEL</button>
-                                    <button type="button" class="form_btn bg-bna_blue" @click="tab += 1" :disabled="!accept_TOS">CONTINUE</button>
+                                    <button type="button" class="form_btn bg-bna_blue" @click="tab += 1" :disabled="!accept_TOS || email_already_exists">CONTINUE</button>
                                 </div>
                             </div>
                         </div>
@@ -356,6 +357,8 @@ import { loadStripe } from "@stripe/stripe-js";
 
                 total_price: 0,
 
+                email_already_exists: false,
+
             }
         },
 
@@ -461,6 +464,19 @@ import { loadStripe } from "@stripe/stripe-js";
                     alert("user created!");
                 }catch(error){
                     console.log("error creating user: ", error);
+                }
+            },
+
+            // avoide already existing users to proceed with guest checkout
+            // exisitng users must sign in to checkout on courses...
+            async checkForExisitingEmail(){
+                try{
+                    const response = await axios.post(`${this.api_url}/get-user/${this.user.email}`);
+                    console.log("checking email: ", response.data.message);
+                    this.email_already_exists = false;
+                }catch(error){
+                    console.log("error checking email: ", error);
+                    this.email_already_exists = true;
                 }
             },
 

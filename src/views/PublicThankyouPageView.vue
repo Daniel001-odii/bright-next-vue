@@ -1,4 +1,7 @@
 <template>
+
+    <SpinninLoader v-if="email_loading"/>
+
     <div class="absolute z-10 bg-[#EEF0F7] h-screen w-full" v-if="set_password_screen">
         <div class=" flex flex-col items-center">
         <div class=" w-[400px] mt-[150px] flex flex-col items-center">
@@ -35,11 +38,15 @@
 
     <div class="w-full h-screen bubble_screen flex justify-center ">
         <div class=" mt-[150px] flex flex-col justify-center items-center h-[400px] w-[80%] bg-white rounded-3xl bg-opacity-80  backdrop-blur-md gap-3">
+
+            <!-- DISPLAY ERROS HERE -->
+            <span class="text-red-500">{{ error }}</span>
+
             <h1 class="font-bold text-2xl">Thank you! You're all set.</h1>
             <p class="text-center p-5">We've sent a cofirmation email and a password reset link to <strong>{{ email }}</strong>.</p>
-            <!-- <RouterLink to="/password"> -->
-                <button @click="set_password_screen = !set_password_screen" class=" px-12 py-3 rounded-full font-bold text-lg text-white bg-bna_blue hover:bg-opacity-90 uppercase shadow-lg shadow-bna_blue">set password</button>
-            <!-- </RouterLink> -->
+            
+            <button @click="set_password_screen = !set_password_screen" class=" px-12 py-3 rounded-full font-bold text-lg text-white bg-bna_blue hover:bg-opacity-90 uppercase shadow-lg shadow-bna_blue">set password</button>
+            
             <!-- <span class="w-[100px] text-red-500">reset token:{{ $route.query.payment_intent_client_secret }}</span> -->
         </div>
 
@@ -50,15 +57,13 @@
 <script>
 import { RouterLink } from 'vue-router';
 import axios from 'axios';
+import SpinninLoader from '../components/SpinningLoader.vue'
 
 // import SetPassword from '../views/SetpasswordPageView'
 
     export default {
         name: "PublicThankyouPageView",
-        // components: { SetPassword },
-        props: {
-            auth_user: Boolean,
-        },
+        components: { SpinninLoader },
         data(){
             return{
                 user:'',
@@ -74,6 +79,12 @@ import axios from 'axios';
                 },
 
                 token_error: '',
+
+                email_loading: false,
+
+                user_step_passed: false,
+
+                error: '',
             }
         },
         methods: {
@@ -83,6 +94,8 @@ import axios from 'axios';
 
             // create user account...
             async createNewUser(){
+                // a loading state for the page...
+                this.email_loading = true;
                 const form = {
                     user: JSON.parse(localStorage.getItem('BNA_guest_user')),
                 }
@@ -90,10 +103,24 @@ import axios from 'axios';
                 try{
                     const response = await axios.post(`${this.api_url}/users/guest`, form);
                     console.log("response from create user: ", response);
-                    // if(response.status == )
-                    // alert("user created!");
+
+                    // a loading state for the page...
+                    this.email_loading = false;
+
+                    // user step has been passed...
+                    this.user_step_passed = true;
+
+                    // clear temp user data..
+                    localStorage.removeItem('BNA_guest_user');
+
                 }catch(error){
                     console.log("error creating user: ", error);
+
+                    // a loading state for the page...
+                    this.email_loading = false;
+
+                    // user step has been passed...
+                    this.user_step_passed = true;
                 }
             },
 
@@ -123,6 +150,9 @@ import axios from 'axios';
             },
 
             async checkResetTokenAndReturnEmail(){
+                // a loading state for the page...
+                this.email_loading = true;
+
                 // const reset_token = this.$route.query ? this.$route.query.payment_intent_client_secret : this.$route.params.reset_token;
 
                 // check if user is visiting via checkout page or via email link...
@@ -139,8 +169,13 @@ import axios from 'axios';
                     const response = await axios.post(`${this.api_url}/users/guest/${reset_token}`);
                     console.log("response from token checker: ", response);
                     this.email = response.data.email;
+
+                    // disabled loading once email is delivered
+                    this.email_loading = false;
+
                     // this.token_error = response.data.message;
                 }catch(error){
+                    this.email_loading = false;
                     console.log("error checking token", error);
                     if(error.response.status == 400){
                         this.token_error = error.response.data.message;
@@ -151,9 +186,18 @@ import axios from 'axios';
         },
 
         mounted() {
-            this.createNewUser();
-            // this.getUser();
-            this.checkResetTokenAndReturnEmail();
+            // this.createNewUser();
+            
+            // this.checkResetTokenAndReturnEmail();
+
+                this.createNewUser()
+            .then(() => {
+                this.checkResetTokenAndReturnEmail();
+            })
+            .catch(error => {
+                this.error = error;
+            });
+            
         }
 
     }

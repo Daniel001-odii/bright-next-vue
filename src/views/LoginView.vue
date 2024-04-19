@@ -147,6 +147,7 @@ export default {
             catch(error){
                 // console.error(error);
                 this.error = error.response.data.message;
+                this.loading = false;
             }
         },
 
