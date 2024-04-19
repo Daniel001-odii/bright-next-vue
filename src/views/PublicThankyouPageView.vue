@@ -40,7 +40,7 @@
             <!-- <RouterLink to="/password"> -->
                 <button @click="set_password_screen = !set_password_screen" class=" px-12 py-3 rounded-full font-bold text-lg text-white bg-bna_blue hover:bg-opacity-90 uppercase shadow-lg shadow-bna_blue">set password</button>
             <!-- </RouterLink> -->
-            <!-- <span>{{ $route.query.payment_intent_client_secret }}</span> -->
+            <!-- <span class="w-[100px] text-red-500">reset token:{{ $route.query.payment_intent_client_secret }}</span> -->
         </div>
 
         
@@ -103,6 +103,7 @@ import axios from 'axios';
 
                 try{
                     const response = await axios.post(`${this.api_url}/users/guest/security`, form);
+                    console.log("password change successfully: ", response);
                 }catch(error){
                     console.log("error setting password: ", error);
                 }
@@ -116,6 +117,7 @@ import axios from 'axios';
                 }catch(error){
                     console.log("error checking token", error);
                     this.token_error = error.response.data.message;
+                    this.set_password_screen = !this.set_password_screen;
 
                 }   
             }

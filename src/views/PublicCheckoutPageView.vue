@@ -1,48 +1,52 @@
 <template>
 <div class="h-screen">
     
-<nav class="flex flex-row p-3 justify-between items-center bg-slate-50 text-white">
+<nav class="flex flex-row p-3 justify-between items-center bg-slate-50">
     <img src="../assets/bright-next-logo.png" class="w-[200px]">
 
-    <div class="flex flex-row gap-5 text-blue-600 font-bold justify-evenly">
-        <div class="hidden md:inline-block">Faculty</div>
-        <div class="hidden md:inline-block">Be Certified Ready</div>
+    <div class="flex flex-row gap-5 text-blue-600 font-bold">
+        <div class="md:inline-block">Faculty</div>
+        <div class="md:inline-block">Be Certified Ready</div>
         <RouterLink to="/login">
             <div>Login</div>
         </RouterLink>
-    </div>
+ 
 
-    <div class="flex flex-row gap-3 justify-evenly">
-        <div class="relative">
-            <button @click="cart_menu = !cart_menu" class=" bg-bna_green p-3 rounded-xl text-white font-bold h-10 w-10 text-2xl relative flex justify-center place-items-center">
-                <i class="bi bi-cart"></i>
-                <div v-if="cart.length > 0" class="bg-red-500 px-2 absolute rounded-full -top-2 -right-2 text-sm">{{ cart.length }}</div>
-            </button>
-            <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
-                <div class="flex flex-col">
-                    <div class="font-bold flex flex-row justify-between text-black">
-                        <span>Course</span>
-                        <span>Price</span>
-                    </div>
-                    <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-3 justify-between" v-for="(course, index) in cart" :key="index">
-                        <div class="flex flex-row gap-3">
-                            <button @click="removeCourseFromTemporaryCartStorage(course._id)"><i class="bi bi-x-lg"></i></button>
-                            <span class="w-[70%]">{{ course.title }}</span>
+        <div class="flex flex-row gap-3 justify-evenly">
+            <div class="relative">
+                <button @click="cart_menu = !cart_menu" class=" bg-bna_green p-3 rounded-xl text-white font-bold h-10 w-10 text-2xl relative flex justify-center place-items-center">
+                    <i class="bi bi-cart"></i>
+                    <div v-if="cart.length > 0" class="bg-red-500 px-2 absolute rounded-full -top-2 -right-2 text-sm">{{ cart.length }}</div>
+                </button>
+                <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
+                    <div class="flex flex-col">
+                        <div class="font-bold flex flex-row justify-between text-black">
+                            <span>Course</span>
+                            <span>Price</span>
                         </div>
-                        <div>{{ course.price }}</div>
+                        <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-3 justify-between" v-for="(course, index) in cart" :key="index">
+                            <div class="flex flex-row gap-3">
+                                <button @click="removeCourseFromTemporaryCartStorage(course._id)"><i class="bi bi-x-lg"></i></button>
+                                <span class="w-[70%]">{{ course.title }}</span>
+                            </div>
+                            <div>{{ course.price }}</div>
+                        </div>
                     </div>
+                    <div class="w-full border-t-gray-200 border-t-2"></div>
+                    <RouterLink to="/checkout">
+                        <button class="bg-bna_green w-fit text-white p-5 rounded-full shadow-blue-400 shadow-lg">PROCEED TO CHECKOUT</button> 
+                    </RouterLink>
                 </div>
-                <div class="w-full border-t-gray-200 border-t-2"></div>
-                <RouterLink to="/checkout">
-                    <button class="bg-bna_green w-fit text-white p-5 rounded-full shadow-blue-400 shadow-lg">PROCEED TO CHECKOUT</button> 
-                </RouterLink>
             </div>
+
+
+        <button class=" bg-orange-400 p-3 rounded-xl text-white font-bold">Get Started</button>
+        <button class=" bg-blue-800 p-3 rounded-xl text-white font-bold hidden md:inline-block">Book a Demo</button>
         </div>
-
-
-      <button class=" bg-orange-400 p-3 rounded-xl text-white font-bold">Get Started</button>
-      <button class=" bg-blue-800 p-3 rounded-xl text-white font-bold hidden md:inline-block">Book a Demo</button>
     </div>
+    <button class=" inline-block md:hidden">
+        <i class="bi bi-list text-4xl"></i>
+    </button>
 </nav>
 
 
@@ -245,9 +249,9 @@
                                 </div>
 
 
-                                <!-- <div class="py-5 flex flex-row justify-end gap-6">
+                                <div class="py-5 flex flex-row justify-end gap-6">
                                     <button type="button" class="form_btn bg-bna_green" @click="tab -= 1">GO BACK</button>
-                                </div> -->
+                                </div>
                             </div> 
                         </div>
                     </form>
@@ -269,7 +273,7 @@
 
                             <div v-if="courses" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md" v-for="(course, index) in courses" :key="index">
                                 <div class="flex flex-row items-center gap-3 max-w-[70%]">
-                                    <button @click="removeCourse(index)" v-if="courses.length > 1" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
+                                    <button @click="removeCourseFromTemporaryCartStorage(index)" v-if="courses.length > 1" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
                                     <span>{{ course.title }} {{ index }}</span>
                                 </div>
                                 <span>$ {{ course.price }}</span>
@@ -356,14 +360,7 @@ import { loadStripe } from "@stripe/stripe-js";
         },
 
         methods:{
-            removeCourse(index) {
-                    this.courses.splice(index, 1);
-                    if(this.courses.length <= 0){
-                        // do not allow check out course be zero
-                        window.location.reload()
-                    }
-            },
-
+          
             async STRIPE_ELEMENTS_INIT() {
                 this.stripe_pay_loading = true;
 
