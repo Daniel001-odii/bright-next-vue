@@ -431,7 +431,6 @@ import { loadStripe } from "@stripe/stripe-js";
                     return_url: `${window.location.origin}/thankyou`
                     },
                 });  
-                
             
                 if (error.type === "card_error" || error.type === "validation_error") {
                     this.messages = error.message;
@@ -439,7 +438,7 @@ import { loadStripe } from "@stripe/stripe-js";
                     this.messages = "An unexpected error occured.";
                 };
                 
-                this.createNewUser();
+                
 
                 this.stripe_pay_loading = false;
             },

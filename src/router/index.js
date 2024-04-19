@@ -62,7 +62,7 @@ const routes = [
 
   { path: '/checkout', name: 'checkout-public', component: PublicCheckoutPageView },
 
-  { path: '/thankyou', name: 'thank you', component: PublicThankyouPageView },
+  { path: '/thankyou/:reset_token?', name: 'thank you', component: PublicThankyouPageView },
 
   { path: '/user/:reset_token/password', name: 'password', component: SetpasswordPageView },
 

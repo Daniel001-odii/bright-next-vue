@@ -6,7 +6,7 @@
             <div class="mt-6 w-[300px]">
                 <h2 class=" font-bold text-2xl text-center text-gray-500">Set Your Password</h2>
 
-                <div v-if="token_error"class="p-5 rounded-md bg-red-200 text-red-600 mt-3">
+                <div v-if="token_error"class="p-5 rounded-md text-red-600 mt-3 text-center">
                     <strong>Looks like this Token Expired</strong>
                     <p>Request for a new password change link by selecting forgot passsword in the <RouterLink to="/login" class="text-blue-500">Login Page.</RouterLink></p>
                 </div>
@@ -36,7 +36,7 @@
     <div class="w-full h-screen bubble_screen flex justify-center ">
         <div class=" mt-[150px] flex flex-col justify-center items-center h-[400px] w-[80%] bg-white rounded-3xl bg-opacity-80  backdrop-blur-md gap-3">
             <h1 class="font-bold text-2xl">Thank you! You're all set.</h1>
-            <p class="text-center p-5">We've sent a cofirmation email and a password reset link to <strong>{{ user.email }}</strong>.</p>
+            <p class="text-center p-5">We've sent a cofirmation email and a password reset link to <strong>{{ email }}</strong>.</p>
             <!-- <RouterLink to="/password"> -->
                 <button @click="set_password_screen = !set_password_screen" class=" px-12 py-3 rounded-full font-bold text-lg text-white bg-bna_blue hover:bg-opacity-90 uppercase shadow-lg shadow-bna_blue">set password</button>
             <!-- </RouterLink> -->
@@ -64,6 +64,8 @@ import axios from 'axios';
             return{
                 user:'',
 
+                email: '',
+
                 set_password_screen: false,
 
                 security: {
@@ -80,6 +82,7 @@ import axios from 'axios';
                 this.user = JSON.parse(localStorage.getItem('BNA_guest_user'));
             },
 
+            // create user account...
             async createNewUser(){
                 const form = {
                     user: JSON.parse(localStorage.getItem('BNA_guest_user')),
@@ -87,12 +90,14 @@ import axios from 'axios';
             
                 try{
                     const response = await axios.post(`${this.api_url}/users/guest`, form);
-                    console.log("response from create user: ", response)
-                    alert("user created!");
+                    console.log("response from create user: ", response);
+                    // if(response.status == )
+                    // alert("user created!");
                 }catch(error){
                     console.log("error creating user: ", error);
                 }
             },
+
 
             async createPassword(){
                 this.security.password_reset_token =  this.$route.query.payment_intent_client_secret;
@@ -109,26 +114,38 @@ import axios from 'axios';
                 }
             },
 
-            async checkResetToken(){
+            async checkResetTokenAndReturnEmail(){
+                // const reset_token = this.$route.query ? this.$route.query.payment_intent_client_secret : this.$route.params.reset_token;
+
+                // check if user is visiting via checkout page or via email link...
+                // email link has more clean link/url
+                // change password link from link is more verbose
+                let reset_token;
+                if(this.$route.query.payment_intent_client_secret){
+                    reset_token = this.$route.query.payment_intent_client_secret
+                } else if(this.$route.params.reset_token) {
+                    reset_token = this.$route.params.reset_token;
+                }
+
                 try{
-                    const response = await axios.post(`${this.api_url}/users/guest/${this.$route.query.payment_intent_client_secret}`);
+                    const response = await axios.post(`${this.api_url}/users/guest/${reset_token}`);
                     console.log("response from token checker: ", response);
+                    this.email = response.data.email;
                     // this.token_error = response.data.message;
                 }catch(error){
                     console.log("error checking token", error);
-                    this.token_error = error.response.data.message;
-                    this.set_password_screen = !this.set_password_screen;
-
-                }   
+                    if(error.response.status == 400){
+                        this.token_error = error.response.data.message;
+                        this.set_password_screen = !this.set_password_screen;
+                    }
+                }  
             }
         },
 
         mounted() {
-            this.getUser();
-
             this.createNewUser();
-
-            this.checkResetToken();
+            // this.getUser();
+            this.checkResetTokenAndReturnEmail();
         }
 
     }
