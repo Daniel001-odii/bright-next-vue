@@ -161,6 +161,7 @@ export default {
 
             }
             catch(error){
+                this.loading = false;
                 console.error(error)
                 this.error = error.response.data.message;
             }
