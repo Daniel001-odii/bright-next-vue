@@ -58,7 +58,6 @@ import axios from 'axios';
         // components: { SetPassword },
         props: {
             auth_user: Boolean,
-            email: String,
         },
         data(){
             return{
@@ -100,7 +99,12 @@ import axios from 'axios';
 
 
             async createPassword(){
-                this.security.password_reset_token =  this.$route.query.payment_intent_client_secret;
+                // this.security.password_reset_token =  this.$route.query.payment_intent_client_secret;
+                if(this.$route.query.payment_intent_client_secret){
+                    this.security.password_reset_token = this.$route.query.payment_intent_client_secret
+                } else if(this.$route.params.reset_token) {
+                    this.security.password_reset_token = this.$route.params.reset_token;
+                }
                 const form = {
                     password: this.security.password,
                     reset_token: this.security.password_reset_token,
@@ -108,6 +112,10 @@ import axios from 'axios';
 
                 try{
                     const response = await axios.post(`${this.api_url}/users/guest/security`, form);
+                    localStorage.setItem("BNA", response.data.token);
+                    // alert(response.data.message);
+                    // this.loading = false;
+                    this.$router.push("/bn/dashboard");
                     console.log("password change successfully: ", response);
                 }catch(error){
                     console.log("error setting password: ", error);
