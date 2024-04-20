@@ -228,7 +228,10 @@
 
                                 <div v-if="payment_type == 'paypal'" class="flex flex-col gap-2 justify-start items-start mt-6">
                                     <h2 class="font-bold text-xl">Paypal</h2>
-                                    <button type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
+                                    
+                                    
+
+                                    <button @click="initiatePaypalPayment" type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
                                         CONNECT
                                     </button>
                                 </div>
@@ -314,10 +317,13 @@ import ThankyouPageView from './ThankyouPageView.vue';
 
 import { loadStripe } from "@stripe/stripe-js";
 
+// import { loadScript } from '@paypal/paypal-js'
+
+import PaypalButton from '../components/PaypalButton.vue';
 
     export default {
         name: "PublicCheckoutPageView",
-        components: { PayPal, ThankyouPageView },
+        components: { PayPal, ThankyouPageView, PaypalButton },
         data(){
             return{
                 user: {
@@ -328,7 +334,7 @@ import { loadStripe } from "@stripe/stripe-js";
                     password_reset_token: '',
                 },
 
-                tab: 0,
+                tab: 2,
                 courses: [],
                 course: {
                     title: '',
@@ -358,6 +364,9 @@ import { loadStripe } from "@stripe/stripe-js";
                 total_price: 0,
 
                 email_already_exists: false,
+
+               
+        
 
             }
         },
@@ -520,19 +529,24 @@ import { loadStripe } from "@stripe/stripe-js";
                 this.getCoursesInCart();
             },
 
+            // paypal payment...
+            async initiatePaypalPayment(){
+                try{
+                    const response = await axios.post(`${this.api_url}/payment/paypal`);
+                    console.log("response from paypal payment: ", response);
+
+                }catch(error){
+                    console.log("error initiating paypal payment: ", error)
+                }
+            },
+
+
+
 
         },
 
         mounted(){
             this.getCoursesInCart();
-
-            // if(this.payment_type == 'stripe'){
-            //     this.STRIPE_ELEMENTS_INIT()
-            // }
-
-            // if(this.tab == 2){
-            //     this.STRIPE_ELEMENTS_INIT();
-            // }
             
         },
 

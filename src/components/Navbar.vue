@@ -44,6 +44,7 @@
                     <span v-else>9+</span>
                 </div>
             </button>
+            
             <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
                 <div class="flex flex-col">
                     <div v-if="cart.length > 0">
@@ -134,18 +135,22 @@ export default {
 
         // CART...
         async removeCourse(course_id){
-            const headers = this.headers;
-            try{
-                const response = await axios.post(`${this.api_url}/cart/courses/${course_id}/remove`, {}, { headers });
-                console.log(response.data.message);
-                
-                // update the cart generally for the remove course...
-                store.dispatch('fetchCart');
+            if(this.$route.path == '/bn/checkout' && this.cart.length <= 1){
+                alert("You must allow atleast one course before checking out")
+            } else {
+                const headers = this.headers;
+                try{
+                    const response = await axios.post(`${this.api_url}/cart/courses/${course_id}/remove`, {}, { headers });
+                    console.log(response.data.message);
+                    
+                    // update the cart generally for the remove course...
+                    store.dispatch('fetchCart');
 
-                
-                
-            }catch(error){
-                console.log("error removing course from cart: ", error);
+                    
+                    
+                }catch(error){
+                    console.log("error removing course from cart: ", error);
+                };
             }
         },
 

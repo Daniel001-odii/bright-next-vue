@@ -218,6 +218,7 @@
                     </button>
                     <div class="mt-3">
                         <h1 class="font-bold text-2xl">Order Summary</h1>
+                        <!-- {{ cart }} -->
                         <div class="mt-3 rounded-xl bg-white p-5 flex flex-col gap-4">
                             <div class="w-full flex flex-row font-bold justify-between">
                                 <span>Course</span>
@@ -332,8 +333,16 @@ import { loadStripe } from "@stripe/stripe-js";
                 try{
                     const response = await axios.post(`${this.api_url}/cart/courses/${course_id}/remove`, {}, { headers });
                     console.log(response.data.message);
+
+
                     // get cart data from store...
-                    store.dispatch('fetchCart');this.getUserCart();
+                    store.dispatch('fetchCart');
+
+                    if(this.cart.length <= 0 || this.cart == []){
+                        this.$router.push('/bn/dashboard')
+                    }
+
+
                 }catch(error){
                     console.log("error removing course from cart: ", error);
                 }
@@ -411,6 +420,10 @@ import { loadStripe } from "@stripe/stripe-js";
                     // linkAuthenticationElement.mount("#link-authentication-element");
 
                     console.log("stripe client secret: ", clientSecret);
+
+                    // checkout and create invoice
+                    this.checkoutCourseAndCreateInvoice("stripe");
+
                     this.stripe_pay_loading = false;
 
                 } catch (error) {
@@ -437,6 +450,7 @@ import { loadStripe } from "@stripe/stripe-js";
                     this.messages = "An unexpected error occured.";
                 };
                 this.stripe_pay_loading = false;
+               
             },
 
             async startStripe(){
@@ -478,6 +492,29 @@ import { loadStripe } from "@stripe/stripe-js";
                 }
             },
 
+            // checkout courses and create invoice...
+            async checkoutCourseAndCreateInvoice(payment_method){
+                let courses = [];
+                const headers = this.headers;
+
+                this.cart.forEach(course => {
+                    courses.push(course._id);
+                });
+
+                const form = {
+                    courses_array: courses,
+                    payment_method,
+                    total_amount: this.total_price,
+                };
+
+                try{
+                    const response = await axios.post(`${this.api_url}/courses/enroll`, form, { headers } );
+                    console.log("reponse from course checkout: ", response)
+                }catch(error){
+                    console.log("error checking out: ", error);
+                }
+            },
+
             
             selectPaymentmethod(){
                 if(this.payment_type == 'stripe'){
@@ -510,11 +547,6 @@ import { loadStripe } from "@stripe/stripe-js";
 
             // initialize stripe embedded page element...
             // this.initialize();
-
-            // avoid users from checking out on empty cart...
-            // if(this.cart.length <= 0){
-            //     this.$router.push('/bn/dashboard')
-            // }
 
         },
 

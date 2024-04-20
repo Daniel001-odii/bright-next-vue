@@ -210,14 +210,14 @@ export default {
             };
 
             try{
-                // open the checkout page...
-                this.$router.push(`/bn/checkout`);
-
                 const response = await axios.post(`${this.api_url}/courses/${course_id}/enroll`, {}, { headers });
                 console.log("course enrolled...", response);
 
                 // update cart...
                 store.dispatch('fetchCart');
+
+                // open the checkout page...
+                this.$router.push(`/bn/checkout`);
                 
             }catch(error){
                 console.log("error enrolling course...");
