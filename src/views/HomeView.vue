@@ -167,9 +167,10 @@ export default {
 
         async getCoursesInCart() {
             const body = {
-                    coursesArray: JSON.parse(localStorage.getItem('_BNA_cart')),
+                    courses_array: JSON.parse(localStorage.getItem('_BNA_cart')),
                 };
-            console.log("courses currently in cart: ", body)
+            console.log("courses currently in cart: ", body);
+
             try {
                 const response = await axios.post(`${this.api_url}/courses/array`, body);
                 console.log("courses array: ", response);

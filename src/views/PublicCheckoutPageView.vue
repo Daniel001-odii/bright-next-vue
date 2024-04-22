@@ -494,7 +494,7 @@ import PaypalButton from '../components/PaypalButton.vue';
             // get courses in temporary storage...
             async getCoursesInCart() {
                 const body = {
-                        coursesArray: JSON.parse(localStorage.getItem('_BNA_cart')),
+                        courses_array: JSON.parse(localStorage.getItem('_BNA_cart')),
                     };
                 console.log("courses currently in cart: ", body)
                 try {

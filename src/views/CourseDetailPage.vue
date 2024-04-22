@@ -19,7 +19,7 @@
                     <li>Classes starting on 19 January</li>
                 </ol>
             </div>
-            <div class="flex flex-row gap-8 mt-3">
+            <div class="flex flex-row gap-8 mt-3" v-if="user && !user.enrolled_courses.includes(course._id)">
                 <button class="bna_btn bg-bna_green"><i class="bi bi-plus-lg"></i> ADD TO CART</button>
 
                 <!-- <RouterLink :to="'/bn/checkout/' + course.title"> -->

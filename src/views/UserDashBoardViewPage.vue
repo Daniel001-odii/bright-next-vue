@@ -16,7 +16,7 @@
                 <div class=" flex flex-row justify-between items-center bg-white rounded-xl p-3 gap-8 w-[300px]">
                     <div>
                         <p class="font-bold">Enrolled Courses</p>
-                        <span>6</span>
+                        <span v-if="user">{{ user.enrolled_courses.length }}</span>
                     </div>
                     <div>
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -28,7 +28,7 @@
                 <div class=" flex flex-row justify-between items-center bg-white rounded-xl p-3 gap-8 w-[300px]">
                     <div>
                         <p class="font-bold">Certifications</p>
-                        <span>2</span>
+                        <span>0</span>
                     </div>
                     <div>
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -64,34 +64,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <tr v-for="course in enrolled_courses" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Web Development Bootcamp
+                            {{ course.title }}
                         </th>
                         <td class="px-6 py-4">
-                            10
+                            {{  course.modules }}
                         </td>
                         <td class="px-6 py-4">
-                            $2999
+                            ${{ course.price }}
                         </td>
                         <td class="px-6 py-4 text-right">
                             <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
                         </td>
                     </tr>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Data Science Fundamentals
-                        </th>
-                        <td class="px-6 py-4">
-                            8
-                        </td>
-                        <td class="px-6 py-4">
-                            $1999
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td>
-                    </tr>
+                    
                 </tbody>
             </table>
         </div>
@@ -129,7 +116,7 @@
                         </div>
                         <div class="w-full flex flex-row justify-between justify-self-end p-5">
                             <!-- <RouterLink :to="'/bn/checkout/' + course.title"> -->
-                                <button @click="addCourseToCart(course._id, course.title)" class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_green text-white">ENROLL TODAY</button>
+                                <button v-if="user && !user.enrolled_courses.includes(course._id)" @click="addCourseToCart(course._id, course.title)" class="font-bold text-sm px-6 py-6 rounded-3xl bg-bna_green text-white">ENROLL TODAY</button>
                             <!-- </RouterLink> -->
                             
 
@@ -162,6 +149,8 @@ export default {
 
             loading_courses: false,
             courses: [],
+
+            enrolled_courses: '',
 
         }
     },
@@ -222,7 +211,22 @@ export default {
             }catch(error){
                 console.log("error enrolling course...");
             }
-        }
+        },
+
+        async getUserEnrolledCourses(){
+            const headers = {
+                Authorization: `JWT ${localStorage.getItem('BNA')}`
+            }; 
+
+            try{
+                const response = await axios.get(`${this.api_url}/user-courses`, { headers });
+                // console.log("user enrolled courses: ", response);
+                this.enrolled_courses = response.data.enrolled_courses;
+
+            }catch(error){
+                console.log("error getting enrolled courses: ", error);
+            }
+        },
     },
     computed: {
         userReadableDate() {
@@ -232,6 +236,7 @@ export default {
     mounted(){
         this.getUser();
         this.getCourses();
+        this.getUserEnrolledCourses();;
     }
     
 }
