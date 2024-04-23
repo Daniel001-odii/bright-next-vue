@@ -334,7 +334,7 @@ import PaypalButton from '../components/PaypalButton.vue';
                     password_reset_token: '',
                 },
 
-                tab: 2,
+                tab: 0,
                 courses: [],
                 course: {
                     title: '',
