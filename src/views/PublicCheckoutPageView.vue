@@ -1,53 +1,7 @@
 <template>
-<div class="h-screen">
+<div class="min-h-screen">
     
-<nav class="flex flex-row p-3 justify-between items-center bg-slate-50">
-    <img src="../assets/bright-next-logo.png" class="w-[200px]">
-
-    <div class="flex flex-row gap-5 text-blue-600 font-bold">
-        <div class="md:inline-block">Faculty</div>
-        <div class="md:inline-block">Be Certified Ready</div>
-        <RouterLink to="/login">
-            <div>Login</div>
-        </RouterLink>
- 
-
-        <div class="flex flex-row gap-3 justify-evenly">
-            <div class="relative">
-                <button @click="cart_menu = !cart_menu" class=" bg-bna_green p-3 rounded-xl text-white font-bold h-10 w-10 text-2xl relative flex justify-center place-items-center">
-                    <i class="bi bi-cart"></i>
-                    <div v-if="cart.length > 0" class="bg-red-500 px-2 absolute rounded-full -top-2 -right-2 text-sm">{{ cart.length }}</div>
-                </button>
-                <div v-if="cart_menu" class=" bg-white shadow-xl  min-w-[400px] p-8 flex flex-col gap-4 border-t-8 z-30 rounded-lg border-t-bna_green h-fit absolute -right-5 mt-3">
-                    <div class="flex flex-col">
-                        <div class="font-bold flex flex-row justify-between text-black">
-                            <span>Course</span>
-                            <span>Price</span>
-                        </div>
-                        <div class="text-black flex flex-row gap-3 hover:bg-gray-100 rounded-md p-3 justify-between" v-for="(course, index) in cart" :key="index">
-                            <div class="flex flex-row gap-3">
-                                <button @click="removeCourseFromTemporaryCartStorage(course._id)"><i class="bi bi-x-lg"></i></button>
-                                <span class="w-[70%]">{{ course.title }}</span>
-                            </div>
-                            <div>{{ course.price }}</div>
-                        </div>
-                    </div>
-                    <div class="w-full border-t-gray-200 border-t-2"></div>
-                    <RouterLink to="/checkout">
-                        <button class="bg-bna_green w-fit text-white p-5 rounded-full shadow-blue-400 shadow-lg">PROCEED TO CHECKOUT</button> 
-                    </RouterLink>
-                </div>
-            </div>
-
-
-        <button class=" bg-orange-400 p-3 rounded-xl text-white font-bold">Get Started</button>
-        <button class=" bg-blue-800 p-3 rounded-xl text-white font-bold hidden md:inline-block">Book a Demo</button>
-        </div>
-    </div>
-    <button class=" inline-block md:hidden">
-        <i class="bi bi-list text-4xl"></i>
-    </button>
-</nav>
+<GuestNavbar/>
 
 
     <div class=" flex flex-col justify-center items-center w-full mt-10">
@@ -228,11 +182,9 @@
 
                                 <div v-if="payment_type == 'paypal'" class="flex flex-col gap-2 justify-start items-start mt-6">
                                     <h2 class="font-bold text-xl">Paypal</h2>
-                                    
-                                    
-
-                                    <button @click="INITIATE_PAYPAL_PAYMENT" type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
-                                        CONNECT
+                                    <button :disabled="loading_paypal" @click="INITIATE_PAYPAL_PAYMENT" type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
+                                        <span v-if="loading_paypal">loading...</span>
+                                        <span v-else>CONNECT</span>
                                     </button>
                                 </div>
 
@@ -277,7 +229,7 @@
 
                             <div v-if="courses" class="flex flex-row justify-between items-center hover:bg-gray-50 p-2 rounded-md" v-for="(course, index) in courses" :key="index">
                                 <div class="flex flex-row items-center gap-3 max-w-[70%]">
-                                    <button @click="removeCourseFromTemporaryCartStorage(index)" v-if="courses.length > 1" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
+                                    <button @click="removeCourseFromTemporaryCartStorage(course._id)" v-if="courses.length > 1" class="hover:bg-slate-200 w-8 h-8 p-3 flex justify-center items-center rounded-full"><i class="bi bi-x-lg"></i></button>
                                     <span>{{ course.title }} {{ index }}</span>
                                 </div>
                                 <span>$ {{ course.price }}</span>
@@ -320,10 +272,11 @@ import { loadStripe } from "@stripe/stripe-js";
 // import { loadScript } from '@paypal/paypal-js'
 
 import PaypalButton from '../components/PaypalButton.vue';
+import GuestNavbar from '@/components/GuestNavbar.vue';
 
     export default {
         name: "PublicCheckoutPageView",
-        components: { PayPal, ThankyouPageView, PaypalButton },
+        components: { PayPal, ThankyouPageView, PaypalButton, GuestNavbar },
         data(){
             return{
                 user: {
@@ -364,6 +317,8 @@ import PaypalButton from '../components/PaypalButton.vue';
                 total_price: 0,
 
                 email_already_exists: false,
+
+                loading_paypal: false,
 
                
         
@@ -490,21 +445,7 @@ import PaypalButton from '../components/PaypalButton.vue';
             },
 
 
-            async INITIATE_PAYPAL_PAYMENT(){
-                this.loading_paypal = true;
-
-                try{
-                    const response = await axios.post(`${this.api_url}/payment/paypal`);
-                    console.log("paypal response: ", response)
-                    const payment_url = response.data.links;
-                    window.location.href = payment_url;
-
-                    this.loading_paypal = false;
-                }catch(error){
-                    console.log("error initiating paypal payment...");
-                    this.loading_paypal = false;
-                }
-            },
+           
 
            
 
@@ -544,6 +485,41 @@ import PaypalButton from '../components/PaypalButton.vue';
                     localStorage.setItem('_BNA_cart', JSON.stringify(temporaryCart));
                 };
                 this.getCoursesInCart();
+            },
+
+            // initiate paypal payment ...
+            async INITIATE_PAYPAL_PAYMENT(){
+                this.loading_paypal = true;
+
+                let total_price;
+
+                // i have used a fixed value here for the discount price, but it obviouvly should be
+                // dynamic and fed from the database, this is just used for development and test purposes...
+                
+                if(this.has_discount_code){
+                    total_price = this.total_price - (this.total_price * 0.05);
+                } else {
+                    total_price = this.total_price
+                }
+
+
+                const body = {
+                    product: {
+                        price: total_price,
+                    }
+                }
+
+                try{
+                    const response = await axios.post(`${this.api_url}/payment/paypal`, body);
+                    console.log("paypal response: ", response)
+                    const payment_url = response.data.links;
+                    window.location.href = payment_url;
+
+                    this.loading_paypal = false;
+                }catch(error){
+                    console.log("error initiating paypal payment...");
+                    this.loading_paypal = false;
+                }
             },
 
 

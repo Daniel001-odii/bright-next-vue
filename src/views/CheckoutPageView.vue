@@ -386,7 +386,10 @@ import { loadStripe } from "@stripe/stripe-js";
 
                 if(this.has_discount_code){
                     total_price = this.total_price - (this.total_price * 0.05);
+                } else {
+                    total_price = this.total_price
                 }
+
 
                 
                 const submit_to_server = {
@@ -450,12 +453,20 @@ import { loadStripe } from "@stripe/stripe-js";
                 this.stripe_pay_loading = true;
                 const elements = this.elements;
                 const stripe = this.stripe;
-                const { error } = await stripe.confirmPayment({
+                // const { error } = await stripe.confirmPayment({
+                //     elements,
+                //     confirmParams: {
+                //     return_url: `${window.location.origin}/bn/thankyou`
+                //     }
+                // });
+                const response = await stripe.confirmPayment({
                     elements,
                     confirmParams: {
                     return_url: `${window.location.origin}/bn/thankyou`
                     }
                 });
+
+                console.log("response from submitted stripe payment: ", response)
 
                 if (error.type === "card_error" || error.type === "validation_error") {
                     this.messages = error.message;
@@ -515,7 +526,10 @@ import { loadStripe } from "@stripe/stripe-js";
                 
                 if(this.has_discount_code){
                     total_price = this.total_price - (this.total_price * 0.05);
+                } else {
+                    total_price = this.total_price
                 }
+
 
 
                 const body = {

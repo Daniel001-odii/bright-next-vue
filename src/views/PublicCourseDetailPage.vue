@@ -1,4 +1,7 @@
 <template>
+
+    <GuestNavbar/>
+
     <div>
         <div v-if="loading">Loading course...</div>
 
@@ -20,7 +23,7 @@
                 </ol>
             </div>
             <div class="flex flex-row gap-8 mt-3">
-                <button class="bna_btn bg-bna_green"><i class="bi bi-plus-lg"></i> ADD TO CART</button>
+                <!-- <button class="bna_btn bg-bna_green"><i class="bi bi-plus-lg"></i> ADD TO CART</button> -->
 
                 <!-- <RouterLink v-if="user" :to="'/bn/checkout/' + course.title">
                     <button class="bna_btn bg-bna_blue">ENROLL TODAY</button>
@@ -36,11 +39,15 @@
 </template>
 
 <script>
+import GuestNavbar from '@/components/GuestNavbar.vue';
 import axios from 'axios';
 
 
     export default {
         name: "CourseDetailPageView",
+        components:{
+            GuestNavbar
+        },
         data(){
             return{
                 loading: false,
