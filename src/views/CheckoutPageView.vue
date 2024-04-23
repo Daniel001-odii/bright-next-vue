@@ -180,8 +180,9 @@
 
                                 <div v-if="payment_type == 'paypal'" class="flex flex-col gap-2 justify-start items-start mt-6">
                                     <h2 class="font-bold text-xl">Paypal</h2>
-                                    <button type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
-                                        CONNECT
+                                    <button :disabled="loading_paypal" @click="INITIATE_PAYPAL_PAYMENT" type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
+                                        <span v-if="loading_paypal">loading...</span>
+                                        <span v-else>CONNECT</span>
                                     </button>
                                 </div>
 
@@ -321,6 +322,8 @@ import { loadStripe } from "@stripe/stripe-js";
                 stripe_pay_loading: false,
 
                 payment_type: '',
+
+                loading_paypal: false,
 
 
             }
@@ -489,6 +492,22 @@ import { loadStripe } from "@stripe/stripe-js";
                 } catch (error) {
                     console.error('Error processing payment:', error);
                     // Show error message
+                }
+            },
+
+            async INITIATE_PAYPAL_PAYMENT(){
+                this.loading_paypal = true;
+
+                try{
+                    const response = await axios.post(`${this.api_url}/payment/paypal`);
+                    console.log("paypal response: ", response)
+                    const payment_url = response.data.links;
+                    window.location.href = payment_url;
+
+                    this.loading_paypal = false;
+                }catch(error){
+                    console.log("error initiating paypal payment...");
+                    this.loading_paypal = false;
                 }
             },
 
