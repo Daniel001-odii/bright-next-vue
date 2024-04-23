@@ -379,8 +379,18 @@ import { loadStripe } from "@stripe/stripe-js";
             async STRIPE_ELEMENTS_INIT() {
                 this.stripe_pay_loading = true;
 
+                let total_price;
+
+                // i have used a fixed value here for the discount price, but it obviouvly should be
+                // dynamic and fed from the database, this is just used for development and test purposes...
+
+                if(this.has_discount_code){
+                    total_price = this.total_price - (this.total_price * 0.05);
+                }
+
+                
                 const submit_to_server = {
-                    amount: this.total_price,
+                    amount: total_price
                 }
 
                 try {
@@ -498,8 +508,24 @@ import { loadStripe } from "@stripe/stripe-js";
             async INITIATE_PAYPAL_PAYMENT(){
                 this.loading_paypal = true;
 
+                let total_price;
+
+                // i have used a fixed value here for the discount price, but it obviouvly should be
+                // dynamic and fed from the database, this is just used for development and test purposes...
+                
+                if(this.has_discount_code){
+                    total_price = this.total_price - (this.total_price * 0.05);
+                }
+
+
+                const body = {
+                    product: {
+                        price: total_price,
+                    }
+                }
+
                 try{
-                    const response = await axios.post(`${this.api_url}/payment/paypal`);
+                    const response = await axios.post(`${this.api_url}/payment/paypal`, body);
                     console.log("paypal response: ", response)
                     const payment_url = response.data.links;
                     window.location.href = payment_url;

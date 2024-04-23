@@ -231,7 +231,7 @@
                                     
                                     
 
-                                    <button @click="initiatePaypalPayment" type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
+                                    <button @click="INITIATE_PAYPAL_PAYMENT" type="button" class=" py-3 px-6 rounded-full text-blue-500 font-semibold shadow-lg shadow-blue-300">
                                         CONNECT
                                     </button>
                                 </div>
@@ -489,6 +489,23 @@ import PaypalButton from '../components/PaypalButton.vue';
                 }
             },
 
+
+            async INITIATE_PAYPAL_PAYMENT(){
+                this.loading_paypal = true;
+
+                try{
+                    const response = await axios.post(`${this.api_url}/payment/paypal`);
+                    console.log("paypal response: ", response)
+                    const payment_url = response.data.links;
+                    window.location.href = payment_url;
+
+                    this.loading_paypal = false;
+                }catch(error){
+                    console.log("error initiating paypal payment...");
+                    this.loading_paypal = false;
+                }
+            },
+
            
 
             // get courses in temporary storage...
@@ -528,19 +545,6 @@ import PaypalButton from '../components/PaypalButton.vue';
                 };
                 this.getCoursesInCart();
             },
-
-            // paypal payment...
-            async initiatePaypalPayment(){
-                try{
-                    const response = await axios.post(`${this.api_url}/payment/paypal`);
-                    console.log("response from paypal payment: ", response);
-
-                }catch(error){
-                    console.log("error initiating paypal payment: ", error)
-                }
-            },
-
-
 
 
         },
