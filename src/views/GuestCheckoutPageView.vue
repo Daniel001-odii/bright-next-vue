@@ -289,6 +289,7 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
 
                 tab: 0,
                 courses: [],
+
                 course: {
                     title: '',
                     price: ''
@@ -331,8 +332,16 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
             async STRIPE_ELEMENTS_INIT() {
                 this.stripe_pay_loading = true;
 
+                let total_price;
+
+                if(this.has_discount_code){
+                    total_price = this.total_price - (this.total_price * 0.05);
+                } else {
+                    total_price = this.total_price
+                }
+
                 const submit_to_server = {
-                    amount: this.total_price,
+                    amount: total_price,
                 }
 
                 try {
@@ -444,11 +453,6 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
                 }
             },
 
-
-           
-
-           
-
             // get courses in temporary storage...
             async getCoursesInCart() {
                 const body = {
@@ -468,6 +472,12 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
                     }, 0);
 
                     this.total_price = totalPrice;
+
+                    // do not allow users to access page if cart is empty...
+                    if(this.courses && this.courses.length <= 0){
+                        alert("You must allow atleast one course before checking out!");
+                        this.$router.push('/');
+                    }
 
                 } catch (error) {
                     console.debug("failed to get course list: ", error);
@@ -526,8 +536,7 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
         },
 
         mounted(){
-            this.getCoursesInCart();
-            
+            this.getCoursesInCart();            
         },
 
     

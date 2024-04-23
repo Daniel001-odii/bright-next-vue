@@ -125,11 +125,6 @@ import axios from 'axios';
 
         mounted(){
             this.getCoursesInCart();
-
-            if(this.$route.path == '/checkout' && this.user_cart && this.user_cart.length <= 1){
-                alert("You must allow atleast one course before checking out");
-                this.$router.push('/');
-            }
         }
     }
 </script>

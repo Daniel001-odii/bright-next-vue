@@ -11,9 +11,9 @@ import CartPageView from '@/views/CartPageView.vue'
 import ThankyouPageView from '@/views/ThankyouPageView.vue'
 import SetpasswordPageView from '@/views/SetpasswordPageView.vue'
 import PassResetPageView from '@/views/PassResetPageView.vue'
-import PublicCourseDetailPage from '@/views/PublicCourseDetailPage.vue'
-import PublicCheckoutPageView from '@/views/PublicCheckoutPageView.vue'
-import PublicThankyouPageView from '@/views/PublicThankyouPageView.vue'
+import PublicCourseDetailPage from '@/views/GuestCourseDetailPage.vue'
+import PublicCheckoutPageView from '@/views/GuestCheckoutPageView.vue'
+import PublicThankyouPageView from '@/views/GuestThankyouPageView.vue'
 
 // USER BASED PAGES...
 import UserLayoutTemplate from '../views/User/LayoutTemplate.vue'

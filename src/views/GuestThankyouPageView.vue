@@ -187,11 +187,7 @@ import SpinninLoader from '../components/SpinningLoader.vue'
         },
 
         mounted() {
-            // this.createNewUser();
-            
-            // this.checkResetTokenAndReturnEmail();
-
-                this.createNewUser()
+            this.createNewUser()
             .then(() => {
                 this.checkResetTokenAndReturnEmail();
             })
