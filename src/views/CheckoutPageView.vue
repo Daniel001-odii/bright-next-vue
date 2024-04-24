@@ -546,7 +546,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
                     this.loading_paypal = false;
                 }catch(error){
-                    console.log("error initiating paypal payment...");
+                    console.log("error initiating paypal payment: ", error);
                     this.loading_paypal = false;
                 }
             },

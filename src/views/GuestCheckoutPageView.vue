@@ -527,7 +527,7 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
 
                     this.loading_paypal = false;
                 }catch(error){
-                    console.log("error initiating paypal payment...");
+                    console.log("error initiating paypal payment: ", error);
                     this.loading_paypal = false;
                 }
             },
