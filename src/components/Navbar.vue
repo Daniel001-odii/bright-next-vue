@@ -4,7 +4,9 @@
         <nav class="bg-white border-gray-200 dark:bg-gray-900">
         <div class=" flex flex-wrap items-center justify-between mx-auto p-4">
         <span href="https://flowbite.com/" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <img src="https://assets-global.website-files.com/654a036a4d837081164c18b1/65861275fa179165cf72f181_New-Logo%20(1).png" class="h-[60px]" alt="bright-next Logo" />
+            <RouterLink to="/bn/dashboard">
+                <img src="https://assets-global.website-files.com/654a036a4d837081164c18b1/65861275fa179165cf72f181_New-Logo%20(1).png" class="h-[60px]" alt="bright-next Logo" />
+            </RouterLink>
         </span>
         <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
             <RouterLink to="/user/profile">

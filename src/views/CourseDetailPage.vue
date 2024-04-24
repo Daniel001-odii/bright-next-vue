@@ -20,10 +20,11 @@
                 </ol>
             </div>
             <div class="flex flex-row gap-8 mt-3" v-if="user && !user.enrolled_courses.includes(course._id)">
-                <button class="bna_btn bg-bna_green"><i class="bi bi-plus-lg"></i> ADD TO CART</button>
+                
+                <!-- <button class="bna_btn bg-bna_green"><i class="bi bi-plus-lg"></i> ADD TO CART</button> -->
 
                 <!-- <RouterLink :to="'/bn/checkout/' + course.title"> -->
-                    <button @click="enrollCourseTemp(course._id, course)" class="bna_btn bg-bna_blue">ENROLL TODAY</button>
+                    <button @click="addCourseToCart(course._id)" class="bna_btn bg-bna_blue">ENROLL TODAY</button>
                 <!-- </RouterLink> -->
             </div>
         </div>
@@ -32,7 +33,7 @@
 
 <script>
 import axios from 'axios';
-
+import store from '@/store';
 
     export default {
         name: "CourseDetailPageView",
@@ -90,7 +91,28 @@ import axios from 'axios';
                 }catch(error){
                     console.log("error enrolling course...");
                 }
-            }
+            },
+
+                    // add course to users cart temporarily...
+            async addCourseToCart(course_id){
+                const headers = {
+                    Authorization : `JWT ${localStorage.getItem('BNA')}`,
+                };
+
+                try{
+                    const response = await axios.post(`${this.api_url}/courses/${course_id}/enroll`, {}, { headers });
+                    console.log("course enrolled...", response);
+
+                    // update cart...
+                    store.dispatch('fetchCart');
+
+                    // open the checkout page...
+                    this.$router.push(`/bn/checkout`);
+                    
+                }catch(error){
+                    console.log("error enrolling course...", error);
+                }
+            },
 
             
         },

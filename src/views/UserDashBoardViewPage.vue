@@ -193,7 +193,7 @@ export default {
         },
 
         // add course to users cart temporarily...
-        async addCourseToCart(course_id, course_title){
+        async addCourseToCart(course_id){
             const headers = {
                 Authorization : `JWT ${localStorage.getItem('BNA')}`,
             };
