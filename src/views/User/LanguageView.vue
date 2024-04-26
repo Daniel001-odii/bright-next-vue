@@ -6,7 +6,7 @@
             <div class="flex flex-col bg-white rounded-lg mt-6 justify-center items-center px-5 md:px-24 py-5">
                 
                 <select class="border p-6 w-full rounded-lg">
-                    <option>Spanish</option>
+                    <option>English</option>
                 </select>
                 <div class="flex flex-row self-end gap-4 mt-8">
                     <button class="bna_btn  bg-bna_blue">save</button>

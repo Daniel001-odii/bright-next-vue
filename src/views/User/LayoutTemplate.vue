@@ -21,7 +21,7 @@
                 <RouterLink to="/user/subscription">
                     <div class="nav_item group hover:text-bna_blue" :class="{ 'active_page': isSubscription }">
                         <i class="bi bi-credit-card nav_item_icon group-hover:bg-bna_blue" :class="{ 'active_icon': isSubscription }"></i>
-                        <span class="link_name" :class="full_side_bar_content ? 'inline-block':'hidden'">Subscription</span>
+                        <span class="link_name" :class="full_side_bar_content ? 'inline-block':'hidden'">Billing</span>
                     </div>
                 </RouterLink>
 
