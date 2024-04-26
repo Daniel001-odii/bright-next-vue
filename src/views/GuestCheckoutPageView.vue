@@ -285,6 +285,7 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
                     email: '',
                     confirm_email: '',
                     password_reset_token: '',
+                    courses_purchased: JSON.parse(localStorage.getItem('_BNA_cart')),
                 },
 
                 tab: 0,
@@ -395,7 +396,8 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
             },
 
             async SUBMIT_STRIPE_PAYMENT(){
-                // save guest user data...
+
+                // set user...
                 localStorage.setItem('BNA_guest_user', JSON.stringify(this.user));
 
                 this.stripe_pay_loading = true;
@@ -422,21 +424,6 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
             selectPaymentmethod(){
                 if(this.payment_type == 'stripe'){
                     this.STRIPE_ELEMENTS_INIT();
-                }
-            },
-
-            // create user account...
-            async createNewUser(){
-                const form = {
-                    user: JSON.parse(localStorage.getItem('BNA_guest_user')),
-                }
-            
-                try{
-                    const response = await axios.post(`${this.api_url}/users/guest`, form);
-                    console.log("response from create user: ", response)
-                    alert("user created!");
-                }catch(error){
-                    console.log("error creating user: ", error);
                 }
             },
 
@@ -499,6 +486,10 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
 
             // initiate paypal payment ...
             async INITIATE_PAYPAL_PAYMENT(){
+
+                // set user...
+                localStorage.setItem('BNA_guest_user', JSON.stringify(this.user));
+
                 this.loading_paypal = true;
 
                 let total_price;
@@ -537,6 +528,8 @@ import GuestNavbar from '@/components/GuestNavbar.vue';
 
         mounted(){
             this.getCoursesInCart();            
+
+            
         },
 
     

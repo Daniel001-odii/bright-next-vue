@@ -99,7 +99,10 @@ import SpinninLoader from '../components/SpinningLoader.vue'
                 const form = {
                     user: JSON.parse(localStorage.getItem('BNA_guest_user')),
                 }
+
+                console.log("data to submit: ", form)
             
+                
                 try{
                     const response = await axios.post(`${this.api_url}/users/guest`, form);
                     console.log("response from create user: ", response);
